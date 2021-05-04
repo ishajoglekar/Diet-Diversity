@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 class Register(models.Model):
-    name = models.CharField(max_length=50)
-    age = models.IntegerField()
+    name = models.BinaryField(max_length=500)
+    age = models.BinaryField(max_length=500)
     height = models.IntegerField()
     weight = models.IntegerField()
     facilities1 = models.CharField(max_length=50)

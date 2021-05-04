@@ -1,12 +1,28 @@
 from django.shortcuts import render
 from .models import Register
 
-# Create your views here.
+import environ
+env = environ.Env()
+environ.Env.read_env()
+from cryptography.fernet import Fernet
+
+key: bytes = bytes(env('KEY'),'ascii')
+f = Fernet(key)
+            
+
+
+def encrypt(data):
+    stringBytes = bytes(data,'UTF-8')
+    encr = f.encrypt(stringBytes)
+    return encr
+
+
+
 def show(request):
     print(request.method)
     if(request.method=="POST"):
-        name = request.POST['name']
-        age = request.POST['age']
+        name = encrypt(request.POST['name'])
+        age = encrypt(request.POST['age'])
         height = request.POST['height']
         weight = request.POST['weight']
         facilities1 = request.POST['priority']
@@ -18,4 +34,12 @@ def show(request):
         print(my_string)
         r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string)
         r.save()
-    return render(request,'index.html')
+    return render(request,'registration/index.html')
+
+def get(request):
+    list = Register.objects.all()
+    for obj in list:
+        obj.name = f.decrypt(obj.name).decode('UTF-8')
+        obj.age = f.decrypt(obj.age).decode('UTF-8')
+        
+    return render(request,'registration/get.html',{'list':list})
