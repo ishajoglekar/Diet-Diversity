@@ -9,8 +9,8 @@ from cryptography.fernet import Fernet
 
 key: bytes = bytes(env('KEY'),'ascii')
 f = Fernet(key)
-            
 
+error_messages = dict()
 
 def encrypt(data):
     stringBytes = bytes(data,'UTF-8')
@@ -25,18 +25,19 @@ def show(request):
         temp = myValidate.validate(request.POST['height'])
         if isinstance(temp,list):
             for error in temp:
-                messages.add_message(request,messages.ERROR,error)
+                # error_messages.setdefault('height',[]).append(error)
+                error_messages.update({'height':error})
         validateRequired = myValidate.validateRequired(request.POST['name'])
         
         if isinstance(validateRequired,list):
             for error in validateRequired:
-                messages.add_message(request,messages.ERROR,error)
-
+                error_messages.update({'name':error})
+                print(error_messages)
         validateRequired = myValidate.validateRequired(request.POST['age'])
         
         if isinstance(validateRequired,list):
             for error in validateRequired:
-                messages.add_message(request,messages.ERROR,error)
+                error_messages.update({'age':error})
 
         name = encrypt(request.POST['name'])
         age = encrypt(request.POST['age'])
@@ -48,10 +49,12 @@ def show(request):
         sports = request.POST.getlist('priority3[]')
         # print(sports)
         my_string = ','.join(sports)
+
+        print(error_messages)
         # print(my_string)
         # r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string)
         # r.save()
-    return render(request,'registration/index.html')
+    return render(request,'registration/index.html',{'error_messages':error_messages})
 
 def get(request):
     list = Register.objects.all()

@@ -5,6 +5,8 @@ from registration.models import *
 
 # Create your models here.
 
+
+
 class myValidate:
     def validate(value):
         errors = []
@@ -26,6 +28,7 @@ class myValidate:
         
 
 class Register(models.Model):
+    
     name = models.BinaryField(max_length=500)
     age = models.BinaryField(max_length=500)
     height = models.IntegerField()
