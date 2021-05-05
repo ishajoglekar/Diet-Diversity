@@ -18,6 +18,8 @@ def encrypt(data):
     return encr
 
 
+# def index(request):
+#     return render(request,'registration/index.html')
 
 def show(request):
     print(request.method)
@@ -52,8 +54,13 @@ def show(request):
 
         print(error_messages)
         # print(my_string)
-        # r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string)
-        # r.save()
+        if(len(error_messages) == 0):
+            r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string)
+            r.save()
+    # elif(request.method =="GET"):
+    #     error_messages = {}
+
+        
     return render(request,'registration/index.html',{'error_messages':error_messages})
 
 def get(request):
