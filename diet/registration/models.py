@@ -38,5 +38,3 @@ class Register(models.Model):
     facilities3 = models.CharField(max_length=50)
     sports = models.CharField(max_length=50)
     objects = myValidate()
-
-    
