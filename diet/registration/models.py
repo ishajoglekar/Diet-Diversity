@@ -8,23 +8,30 @@ from registration.models import *
 
 
 class myValidate:
-    def validate(value):
+    def validateGreaterThan0(value):
         errors = []
-        if int(value) % 2 != 0:
-            errors.append('not an even number')
-            print("Not an even number")
-            # raise ValidationError(
-            #     'not an even number',
-            #     params={'value': value},
-            # )
-            return errors
+        if value:
+            if int(value) < 10:
+                errors.append('Enter Age greater than 10')
+                # raise ValidationError(
+                #     'not an even number',
+                #     params={'value': value},
+                # )
+                return errors
 
     def validateRequired(value):
         errors = []
-        if not value.strip():
+        print(value)
+        if isinstance(value,list):
+            if not value:
+                errors.append('required field')
+                return errors
+        elif not value.strip():
             errors.append('required field')
             print("Required Field")
             return errors
+
+    
         
 
 class Register(models.Model):
