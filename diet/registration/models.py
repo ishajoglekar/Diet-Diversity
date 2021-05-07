@@ -35,7 +35,6 @@ class myValidate:
         
 
 class Register(models.Model):
-    
     name = models.BinaryField(max_length=500)
     age = models.BinaryField(max_length=500)
     height = models.IntegerField()
@@ -44,4 +43,7 @@ class Register(models.Model):
     facilities2 = models.CharField(max_length=50)
     facilities3 = models.CharField(max_length=50)
     sports = models.CharField(max_length=50)
+    username = models.CharField(max_length=50)
+    password = models.CharField(max_length=50)
+    password_changed = models.BooleanField()
     objects = myValidate()
