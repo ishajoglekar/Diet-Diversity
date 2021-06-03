@@ -100,14 +100,15 @@ def show(request):
         facilities3 = request.POST.get('priority2','')
 
         sports = request.POST.getlist('priority3[]')
-
+        username = str(request.POST['name'].lower().replace(" ",""))+str(random.randint(11,99))
+        password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
         # print(sports)
         my_string = ','.join(sports)
 
         print(error_messages)
         # print(my_string)
         if(len(error_messages) == 0):
-            r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string)
+            r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string,username=username,password=password,password_changed=False)
             r.save()
     elif(request.method =="GET"):
         error_messages.clear()  
@@ -191,41 +192,41 @@ def excelRegister(request):
             for cell in row:                                
                 if cell.row == 1 :                
                     continue
-
-                if cell.column == 'A':                    
-                    row_data.append(encrypt(str(cell.value)))                                                            
+                if cell.column_letter == 'A':                    
+                    row_data.append(encrypt(str(cell.value)))
                     row_data.append(str(cell.value.lower().replace(" ",""))+str(random.randint(11,99)))
-
-                elif cell.column == 'B':
-                    row_data.append(encrypt(str(cell.value))) 
-
-                elif cell.column == 'C':
+                    print('HERE')
+                elif cell.column_letter == 'B':
+                    row_data.append(encrypt(str(cell.value)))
+                elif cell.column_letter == 'C':
                     row_data.append(int(cell.value))
-
-                elif cell.column == 'D':
+                elif cell.column_letter == 'D':
                     row_data.append(int(cell.value))
-
-                elif cell.column == 'E':
+                elif cell.column_letter == 'E':
                     row_data.append(str(cell.value))
-
-                elif cell.column == 'F':
+                elif cell.column_letter == 'F':
                     row_data.append(str(cell.value))
-
-                elif cell.column == 'G':
+                elif cell.column_letter == 'G':
                     row_data.append(str(cell.value))
-
                 else:
                     row_data.append(str(cell.value))
-
-              
-
             excel_data.append(row_data)
 
         for index,row in enumerate(excel_data):
             if index == 0:
                 continue  
             password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))                      
+            print(row)
             r = Register(name=row[0], username=row[1], age=row[2], height=int(row[3]), weight=int(row[4]), facilities1=row[5], facilities2=row[6], facilities3=row[7], sports=row[8], password=password, password_changed=False)
             r.save()
             
         return redirect(get)
+
+def consent(request):
+    return render(request,'registration_form/consent.html')
+
+def parents_info(request):
+    return render(request,'registration_form/parents_info.html')
+
+def students_info(request):
+    return render(request,'registration_form/students_info.html')

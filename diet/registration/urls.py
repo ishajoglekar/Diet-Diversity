@@ -7,4 +7,8 @@ urlpatterns = [
     path('get/',views.get),
     path('getExcel/',views.getExcel),
     path('excelRegister/',views.excelRegister),
+    path('consent/',views.consent),
+    path('parents_info/',views.parents_info),
+    path('students_info/',views.students_info)
+
 ]  
