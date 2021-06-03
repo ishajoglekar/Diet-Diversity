@@ -1,7 +1,9 @@
 /*custom font*/
+
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
 
 /*basic reset*/
+
 * {
     margin: 0;
     padding: 0;
@@ -18,9 +20,12 @@ html {
 body {
     font-family: montserrat, arial, verdana;
     background: transparent;
+    font-size: 0.8rem;
 }
 
+
 /*form styles*/
+
 #msform {
     text-align: center;
     position: relative;
@@ -36,17 +41,20 @@ body {
     box-sizing: border-box;
     width: 80%;
     margin: 0 10%;
-
     /*stacking fieldsets above each other*/
     position: relative;
 }
 
+
 /*Hide all except first fieldset*/
+
 #msform fieldset:not(:first-of-type) {
     display: none;
 }
 
+
 /*inputs*/
+
 #msform input,
 #msform textarea {
     padding: 15px;
@@ -73,7 +81,9 @@ body {
     -o-transition: All 0.5s ease-in;
 }
 
+
 /*buttons*/
+
 #msform .action-button {
     width: 100px;
     background: #ee0979;
@@ -108,7 +118,9 @@ body {
     box-shadow: 0 0 0 2px white, 0 0 0 3px #C5C5F1;
 }
 
+
 /*headings*/
+
 .fs-title {
     font-size: 18px;
     text-transform: uppercase;
@@ -125,7 +137,9 @@ body {
     margin-bottom: 20px;
 }
 
+
 /*progressbar*/
+
 #progressbar {
     margin-bottom: 30px;
     overflow: hidden;
@@ -158,7 +172,9 @@ body {
     margin: 0 auto 10px auto;
 }
 
+
 /*progressbar connectors*/
+
 #progressbar li:after {
     content: '';
     width: 100%;
@@ -176,8 +192,12 @@ body {
     content: none;
 }
 
+
 /*marking active/completed steps green*/
+
+
 /*The number of the step and the connector before it = green*/
+
 #progressbar li.active:before,
 #progressbar li.active:after {
     background: #ee0979;
@@ -242,4 +262,9 @@ body {
     color: #000;
     width: 180px;
     justify-content: left;
+}
+
+.consent-card {
+    background: #fff;
+    padding: 1rem 2rem;
 }

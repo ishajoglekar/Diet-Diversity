@@ -221,3 +221,12 @@ def excelRegister(request):
             r.save()
             
         return redirect(get)
+
+def consent(request):
+    return render(request,'registration_form/consent.html')
+
+def parents_info(request):
+    return render(request,'registration_form/parents_info.html')
+
+def students_info(request):
+    return render(request,'registration_form/students_info.html')
