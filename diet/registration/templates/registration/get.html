@@ -1,7 +1,4 @@
-{% load google_translate %}
-{% google_translate type='vertical' language='en' %}
-
-{% for student in list %}
+ {% for student in list %}
 <p>{{student.name}}</p>
 <p>{{student.age}}</p>
 <hr> {% endfor %}
