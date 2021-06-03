@@ -2,7 +2,6 @@
 {% google_translate type='vertical' language='en' %}
 
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,7 +16,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>Home</title>
 
-
+  
 </head>
 
 <body>
@@ -28,68 +27,31 @@
                 {% csrf_token %}
                 <!-- progressbar -->
                 <ul id="progressbar">
-                    <li class="active">Consent Form</li>
-                    <li>General Information</li>
-                    <li>SOCIO-DEMOGRAPHIC DETAILS</li>
+                    <li class="active">Personal Details</li>
                     <li>Social Profiles</li>
                     <li>Radio</li>
                 </ul>
                 <!-- fieldsets -->
-
                 <fieldset>
-                    <h2 class="fs-title">Consent Form</h2>
+                    <h2 class="fs-title">Personal Details</h2>
                     <h3 class="fs-subtitle">Tell us something more about you</h3>
-                    <p class="text-justify">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum laboriosam
-                        praesentium natus explicabo eius beatae corporis hic deleniti molestiae. Architecto facere
-                        optio, veniam consectetur atque voluptatibus corporis debitis soluta blanditiis dignissimos
-                        cupiditate eius mollitia odio, quaerat assumenda? Voluptates doloribus voluptatem necessitatibus
-                        omnis? Officia mollitia, beatae at a veritatis fuga aliquam eligendi laudantium molestias
-                        consectetur eveniet voluptatum nulla, voluptates nam necessitatibus blanditiis deleniti odio quo
-                        doloremque! Maiores excepturi error cumque odit consectetur dignissimos quis eius ea. Iusto
-                        sequi architecto nulla atque distinctio aliquam autem maxime sapiente voluptate incidunt,
-                        quaerat voluptatum laborum accusamus voluptatibus doloremque adipisci aspernatur odit eos,
-                        deserunt soluta. Ad.</p>
-                    <div class="grid-row float-left"></div>
-                    <span>Gender:</span>
-                    <label>
-                        <input type="radio" value="yes" name="consent"> Yes
-                    </label>
-                    <label>
-                        <input type="radio" value="yes" name="consent"> No
-                    </label>
-                    {% for key, value in error_messages.items %}
-                        {% if key == 'consent' %}
-                            <p style="color:red">{{value}}</p>
-                        {% endif %}
-                    {% endfor %}
-
-                    <br>
-                    
-                    <input type="button" name="next" class="next action-button" value="Next" />
-                </fieldset>
-                <fieldset>
-                    <h2 class="fs-title">General Information</h2>
-                    <h3 class="fs-subtitle">Tell us something more about you</h3>
-                    <label for="name">Name of the volunteer (by whom the details are filled)</label>
                     <input type="text" name="name" placeholder="Name of the volunteer" />
 
                     {% for key, value in error_messages.items %}
                     {% if key == 'name' %}
-                     <p style="color:red">{{value}}</p>
+                    <p style="color:red">{{value}}</p>
                     {% endif %}
                     {% endfor %}
 
-                    <label for="name">School Student Name</label>
-                    <input type="text" name="name" placeholder="Student Name" />
 
+                    <input type="number" name="age" placeholder="Age" />
                     {% for key, value in error_messages.items %}
-                    {% if key == 'student_name' %}
-                     <p style="color:red">{{value}}</p>
+                    {% if key == 'age' %}
+                    <p style="color:red">{{value}}</p>
                     {% endif %}
                     {% endfor %}
 
-                    
-                    <div>
+                    <div class="grid-row"></div>
                         <span>Gender:</span>
                         <label>
                             <input type="radio" value="male" name="gender"> Male
@@ -98,226 +60,29 @@
                             <input type="radio" value="female" name="gender"> Female
                         </label>
                         {% for key, value in error_messages.items %}
-                            {% if key == 'gender' %}
-                                <p style="color:red">{{value}}</p>
-                            {% endif %}
+                        {% if key == 'gender' %}
+                        <p style="color:red">{{value}}</p>
+                        {% endif %}
                         {% endfor %}
+                    <input type="button" name="next" class="next action-button" value="Next" />
+                </fieldset>
 
-                    </div>
-                    
 
-                    <label for="dob">D.O.B</label>
-                    <input type="date" name="dob" placeholder="01/01/2001" />
-
+                <fieldset>
+                    <h2 class="fs-title">Social Profiles</h2>
+                    <h3 class="fs-subtitle">Your presence on the social network</h3>
+                    <input type="number" name="height" placeholder="Height" />
                     {% for key, value in error_messages.items %}
-                    {% if key == 'dob' %}
-                     <p style="color:red">{{value}}</p>
-                    {% endif %}
-                    {% endfor %}
-
-
-                    <label for="dob">Age:</label>
-                    <input type="number" name="age" placeholder="Age" />
-                    {% for key, value in error_messages.items %}
-                    {% if key == 'age' %}
+                    {% if key == 'height' %}
                     <p style="color:red">{{value}}</p>
                     {% endif %}
                     {% endfor %}
-
-
-                    <div class="form-check">
-                        <label for="religion">My Religious Beliefs Court</label>
-                        <br>
-                        <label>
-                            <input type="radio" class="form-check-input" value="Hindu" name="religion"> <span>Hindu</span>
-                        </label>
-                        <br>
-                        <label>
-                            <input type="radio" class="form-check-input"  value="Islam" name="religion"> <span>Islam</span>
-                        </label>
-                        <br>
-                        <label>
-                            <input type="radio" class="form-check-input"  value="Christianity" name="religion"> <span>Christianity</span>
-                        </label>
-                        <br>
-                        <label>
-                            <input type="radio" class="form-check-input"  value="Jainism" name="religion"> <span>Jainism</span>
-                        </label>
-                        {% for key, value in error_messages.items %}
-                        {% if key == 'religion' %}
-                        <p style="color:red">{{value}}</p>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-                    <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
-                    <input type="button" name="next" class="next action-button" value="Next" />
-
-                </fieldset>
-
-                <fieldset>
-                    <h2 class="fs-title">SOCIO-DEMOGRAPHIC DETAILS</h2>
-                    <h3 class="fs-subtitle">Tell us something more about you</h3>
-
-                    <div class="text-left">
-                        <label for="family_details">In my house, I live with...</label>
-                        <br>
-                        <label>
-                            <input type="radio" class="text-left" value="My Parents Only" name="family_details"> <span>My Parents Only</span>
-                        </label>
-                        <br>
-                        <label>
-                            <input type="radio" class="text-left"  value="My Parents and Siblings" name="family_details"> <span>My Parents and Siblings</span>
-                        </label>
-                        <br>
-                        <label>
-                            <input type="radio" class="text-left"  value="My parents, siblings, grandparents, aunts, uncles and cousins" name="family_details"> <span>My parents, siblings, grandparents, aunts, uncles and cousins</span>
-                        </label>
-                        <br>
-                        <label>
-                            <input type="radio" class="text-left"  value="Other..." name="family_details"> <span>Other...</span>
-                        </label>
-                        <br>
-                        <label>
-                            <input type="radio" class="text-left"  value="Jainism" name="family_details"> <span>Jainism</span>
-                        </label>
-                        {% for key, value in error_messages.items %}
-                        {% if key == 'family_details' %}
-                        <p style="color:red">{{value}}</p>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-                    
-
-
-                    <label for="name_of_guardian">Name of the parent/care-taker/guardian</label>
-                    <input type="text" name="name_of_guardian" placeholder="e.g John Doe" />
-
-
-                    {% for key, value in error_messages.items %}
-                    {% if key == 'name_of_guardian' %}
-                     <p style="color:red">{{value}}</p>
-                    {% endif %}
-                    {% endfor %}
-
-        
-                    <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
-
-                    <input type="button" name="next" class="next action-button" value="Next" />
-
-
-                    
-                </fieldset>
-
-
-                <fieldset>
-                    <h2 class="fs-title">ANTHROPOMETRIC PARAMETERS</h2>
-                    <h3 class="fs-subtitle">Your presence on the social network</h3>
-
-                    <label for="weight">What is your Weight?</label>
-                    <input type="text" name="weight" placeholder="e.g John Doe" />
-
-
+                    <input type="number" name="weight" placeholder="Weight" />
                     {% for key, value in error_messages.items %}
                     {% if key == 'weight' %}
                     <p style="color:red">{{value}}</p>
                     {% endif %}
                     {% endfor %}
-
-                    <div>State the amount of the following food items used to prepare home remedies</div>
-
-                    <div class="grid-header">
-                        <div class="header-item"></div>
-                        <div class="header-item">
-                            <div>1 Pinch</div>
-                        </div>
-                        <div class="header-item">1/4 teaspoon</div>
-                        <div class="header-item">1/2 teaspoon</div>
-                        <div class="header-item">1 teaspoon</div>
-                        <div class="header-item">Do not use</div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="flex-item">Tumeric/ Haldi</div>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1Pinch" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.4teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.2teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="Do not use" name="priority3[]"> <span></span>
-                        </label>
-                    </div>
-
-                    <div class="grid-row">
-                        <div class="flex-item">Carrom seeds/ ...</div>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1Pinch" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.4teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.2teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="Do not use" name="priority3[]"> <span></span>
-                        </label>
-                    </div>
-
-                    <div class="grid-row">
-                        <div class="flex-item">Fennel/ Saunf</div>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1Pinch" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.4teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.2teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="Do not use" name="priority3[]"> <span></span>
-                        </label>
-                    </div>
-
-                    <div class="grid-row">
-                        <div class="flex-item">Ginger/ Adrakh</div>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1Pinch" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.4teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1.2teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="1teaspoon" name="priority3[]"> <span></span>
-                        </label>
-                        <label class="flex-item">
-                            <input type="checkbox" value="Do not use" name="priority3[]"> <span></span>
-                        </label>
-                    </div>
-
-                    {% for key, value in error_messages.items %}
-                    {% if key == 'priority3' %}
-                    <p style="color:red">{{value}}</p>
-                    {% endif %}
-                    {% endfor %}
-
-                   
                     <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
                     <input type="button" name="next" class="next action-button" value="Next" />
                 </fieldset>

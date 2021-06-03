@@ -7,10 +7,10 @@ from cryptography.fernet import Fernet
 import xlwt
 from django.http import HttpResponse
 import openpyxl
-env = environ.Env()
-# environ.Env.read_env() 
-# from cryptography.fernet import Fernet
+import string
+import random
 
+env = environ.Env()
 environ.Env.read_env()
 key: bytes = bytes(env('KEY'),'ascii')
 f = Fernet(key)
@@ -100,14 +100,15 @@ def show(request):
         facilities3 = request.POST.get('priority2','')
 
         sports = request.POST.getlist('priority3[]')
-
+        username = str(request.POST['name'].lower().replace(" ",""))+str(random.randint(11,99))
+        password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))
         # print(sports)
         my_string = ','.join(sports)
 
         print(error_messages)
         # print(my_string)
         if(len(error_messages) == 0):
-            r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string)
+            r = Register(name=name,age=age,height=height,weight=weight,facilities1=facilities1,facilities2=facilities2,facilities3=facilities3,sports=my_string,username=username,password=password,password_changed=False)
             r.save()
     elif(request.method =="GET"):
         error_messages.clear()  
@@ -136,7 +137,7 @@ def getExcel(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['Name', 'Age', 'Height', 'Weight']
+    columns = ['Name','Username', 'Password', 'Age', 'Height', 'Weight']
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
@@ -144,16 +145,28 @@ def getExcel(request):
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
 
-    rows = Register.objects.all().values_list('name', 'age', 'height', 'weight')
+    rows = Register.objects.all().values_list('name', 'username', 'password', 'age', 'height', 'weight', 'password_changed')
     for row in rows:
         row_num += 1
         for col_num in range(len(row)):            
             if(col_num==0):
-                ws.write(row_num, col_num, f.decrypt(row[col_num]).decode('UTF-8'), font_style)    
-            elif(col_num==1):
-                ws.write(row_num, col_num, f.decrypt(row[col_num]).decode('UTF-8'), font_style)    
+                ws.write(row_num, col_num, f.decrypt(row[col_num]).decode('UTF-8'), font_style)
+
+            elif(col_num==2):
+                if not row[6]:
+                    ws.write(row_num, col_num, row[col_num], font_style)
+                else:
+                    ws.write(row_num, col_num, "Password Changed", font_style)
+
+            elif(col_num==6):
+                continue
+
+            elif(col_num==3):
+                ws.write(row_num, col_num, f.decrypt(row[col_num]).decode('UTF-8'), font_style) 
+
             else:
                 ws.write(row_num, col_num, row[col_num], font_style)
+
     wb.save(response)
     return response
 
@@ -176,41 +189,44 @@ def excelRegister(request):
         # getting value from each cell in row        
         for row in worksheet.iter_rows():         
             row_data = list()
-            for cell in row:
+            for cell in row:                                
                 if cell.row == 1 :                
                     continue
-
-                if cell.column == 'A':
-                     row_data.append(encrypt(str(cell.value)))
-
-                elif cell.column == 'B':
-                    row_data.append(encrypt(str(cell.value))) 
-
-                elif cell.column == 'C':
+                if cell.column_letter == 'A':                    
+                    row_data.append(encrypt(str(cell.value)))
+                    row_data.append(str(cell.value.lower().replace(" ",""))+str(random.randint(11,99)))
+                    print('HERE')
+                elif cell.column_letter == 'B':
+                    row_data.append(encrypt(str(cell.value)))
+                elif cell.column_letter == 'C':
                     row_data.append(int(cell.value))
-
-                elif cell.column == 'D':
+                elif cell.column_letter == 'D':
                     row_data.append(int(cell.value))
-
-                elif cell.column == 'E':
+                elif cell.column_letter == 'E':
                     row_data.append(str(cell.value))
-
-                elif cell.column == 'F':
+                elif cell.column_letter == 'F':
                     row_data.append(str(cell.value))
-
-                elif cell.column == 'G':
+                elif cell.column_letter == 'G':
                     row_data.append(str(cell.value))
-
                 else:
-                    row_data.append(str(cell.value))    
-              
-
+                    row_data.append(str(cell.value))
             excel_data.append(row_data)
 
         for index,row in enumerate(excel_data):
             if index == 0:
-                continue
-            r = Register(name=row[0],age=row[1],height=int(row[2]),weight=int(row[3]),facilities1=row[4],facilities2=row[5],facilities3=row[6],sports=row[7])
+                continue  
+            password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 6))                      
+            print(row)
+            r = Register(name=row[0], username=row[1], age=row[2], height=int(row[3]), weight=int(row[4]), facilities1=row[5], facilities2=row[6], facilities3=row[7], sports=row[8], password=password, password_changed=False)
             r.save()
             
         return redirect(get)
+
+def consent(request):
+    return render(request,'registration_form/consent.html')
+
+def parents_info(request):
+    return render(request,'registration_form/parents_info.html')
+
+def students_info(request):
+    return render(request,'registration_form/students_info.html')
