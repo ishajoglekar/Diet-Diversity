@@ -1,6 +1,3 @@
-{% load google_translate %}
-{% google_translate type='vertical' language='en' %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,14 +13,15 @@
 
     <style>
         /*custom font*/
+        
         @import url(https://fonts.googleapis.com/css?family=Montserrat);
-
         /*basic reset*/
+        
         * {
             margin: 0;
             padding: 0;
         }
-
+        
         html {
             height: 100%;
             background: #6441A5;
@@ -31,19 +29,19 @@
             background: -webkit-linear-gradient(to left, #6441A5, #2a0845);
             /* Chrome 10-25, Safari 5.1-6 */
         }
-
+        
         body {
             font-family: montserrat, arial, verdana;
             background: transparent;
         }
-
         /*form styles*/
+        
         #msform {
             text-align: center;
             position: relative;
             margin-top: 30px;
         }
-
+        
         #msform fieldset {
             background: white;
             border: 0 none;
@@ -53,17 +51,16 @@
             box-sizing: border-box;
             width: 80%;
             margin: 0 10%;
-
             /*stacking fieldsets above each other*/
             position: relative;
         }
-
         /*Hide all except first fieldset*/
+        
         #msform fieldset:not(:first-of-type) {
             display: none;
         }
-
         /*inputs*/
+        
         #msform input,
         #msform textarea {
             padding: 15px;
@@ -76,7 +73,7 @@
             color: #2C3E50;
             font-size: 13px;
         }
-
+        
         #msform input:focus,
         #msform textarea:focus {
             -moz-box-shadow: none !important;
@@ -89,8 +86,8 @@
             -moz-transition: All 0.5s ease-in;
             -o-transition: All 0.5s ease-in;
         }
-
         /*buttons*/
+        
         #msform .action-button {
             width: 100px;
             background: #ee0979;
@@ -102,12 +99,12 @@
             padding: 10px 5px;
             margin: 10px 5px;
         }
-
+        
         #msform .action-button:hover,
         #msform .action-button:focus {
             box-shadow: 0 0 0 2px white, 0 0 0 3px #ee0979;
         }
-
+        
         #msform .action-button-previous {
             width: 100px;
             background: #C5C5F1;
@@ -119,13 +116,13 @@
             padding: 10px 5px;
             margin: 10px 5px;
         }
-
+        
         #msform .action-button-previous:hover,
         #msform .action-button-previous:focus {
             box-shadow: 0 0 0 2px white, 0 0 0 3px #C5C5F1;
         }
-
         /*headings*/
+        
         .fs-title {
             font-size: 18px;
             text-transform: uppercase;
@@ -134,22 +131,22 @@
             letter-spacing: 2px;
             font-weight: bold;
         }
-
+        
         .fs-subtitle {
             font-weight: normal;
             font-size: 13px;
             color: #666;
             margin-bottom: 20px;
         }
-
         /*progressbar*/
+        
         #progressbar {
             margin-bottom: 30px;
             overflow: hidden;
             /*CSS counters to number the steps*/
             counter-reset: step;
         }
-
+        
         #progressbar li {
             list-style-type: none;
             color: white;
@@ -160,7 +157,7 @@
             position: relative;
             letter-spacing: 1px;
         }
-
+        
         #progressbar li:before {
             content: counter(step);
             counter-increment: step;
@@ -174,8 +171,8 @@
             border-radius: 25px;
             margin: 0 auto 10px auto;
         }
-
         /*progressbar connectors*/
+        
         #progressbar li:after {
             content: '';
             width: 100%;
@@ -187,59 +184,59 @@
             z-index: -1;
             /*put it behind the numbers*/
         }
-
+        
         #progressbar li:first-child:after {
             /*connector not needed before the first step*/
             content: none;
         }
-
         /*marking active/completed steps green*/
         /*The number of the step and the connector before it = green*/
+        
         #progressbar li.active:before,
         #progressbar li.active:after {
             background: #ee0979;
             color: white;
         }
-
+        
         .wrapper {
             display: flex;
             flex-direction: column;
         }
-
+        
         .grid-row {
             margin-bottom: 1em
         }
-
+        
         .grid-row,
         .grid-header {
             display: flex;
             /*   flex: 1 0 auto; */
             /*   height: auto; */
         }
-
+        
         .grid-header {
             align-items: flex-end;
         }
-
+        
         .header-item {
             width: 100px;
             text-align: center;
             /*   border:1px solid transparent; */
         }
-
+        
         .header-item:nth-child(1) {
             width: 180px;
         }
-
+        
         .subtitle {
             font-size: 0.7em;
         }
-
+        
         .flex-item:before {
             content: '';
             padding-top: 26%;
         }
-
+        
         .flex-item {
             display: flex;
             /*   flex-basis:25%; */
@@ -252,7 +249,7 @@
             font-weight: normal;
             color: #999;
         }
-
+        
         .flex-item:nth-child(1) {
             border: none;
             font-size: 1.15em;
@@ -266,51 +263,38 @@
 <body>
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            
+
             <form id="msform" action="" method="POST">
-            {% csrf_token %}
+                {% csrf_token %}
                 <!-- progressbar -->
                 <ul id="progressbar">
                     <li class="active">Personal Details</li>
                     <li>Social Profiles</li>
-                    <li>Radio</li>                    
+                    <li>Radio</li>
                 </ul>
                 <!-- fieldsets -->
                 <fieldset>
                     <h2 class="fs-title">Personal Details</h2>
                     <h3 class="fs-subtitle">Tell us something more about you</h3>
-                    <input type="text" name="name" placeholder="Name" />
-                    
-                    {% for key, value in error_messages.items %} 
-                        {% if key == 'name' %}
-                            <p style="color:red">{{value}}</p>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    
-                    <input type="number" name="age" placeholder="Age" />
-                    {% for key, value in error_messages.items %} 
-                        {% if key == 'age' %}
-                            <p style="color:red">{{value}}</p>
-                        {% endif %}
-                    {% endfor %}
+                    <input type="text" name="name" placeholder="Name" /> {% for key, value in error_messages.items %} {% if key == 'name' %}
+                    <p style="color:red">{{value}}</p>
+                    {% endif %} {% endfor %}
+
+
+                    <input type="number" name="age" placeholder="Age" /> {% for key, value in error_messages.items %} {% if key == 'age' %}
+                    <p style="color:red">{{value}}</p>
+                    {% endif %} {% endfor %}
                     <input type="button" name="next" class="next action-button" value="Next" />
                 </fieldset>
                 <fieldset>
                     <h2 class="fs-title">Social Profiles</h2>
                     <h3 class="fs-subtitle">Your presence on the social network</h3>
-                    <input type="number" name="height" placeholder="Height" />
-                    {% for key, value in error_messages.items %} 
-                        {% if key == 'height' %}
-                            <p style="color:red">{{value}}</p>
-                        {% endif %}
-                    {% endfor %}
-                    <input type="number" name="weight" placeholder="Weight" />
-                    {% for key, value in error_messages.items %} 
-                            {% if key == 'weight' %}
-                                <p style="color:red">{{value}}</p>
-                            {% endif %}
-                        {% endfor %}     
+                    <input type="number" name="height" placeholder="Height" /> {% for key, value in error_messages.items %} {% if key == 'height' %}
+                    <p style="color:red">{{value}}</p>
+                    {% endif %} {% endfor %}
+                    <input type="number" name="weight" placeholder="Weight" /> {% for key, value in error_messages.items %} {% if key == 'weight' %}
+                    <p style="color:red">{{value}}</p>
+                    {% endif %} {% endfor %}
                     <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
                     <input type="button" name="next" class="next action-button" value="Next" />
                 </fieldset>
@@ -322,7 +306,7 @@
                         <div class="header-item">
                             <div>Yes</div>
                         </div>
-                        <div class="header-item">No</div>                       
+                        <div class="header-item">No</div>
                     </div>
                     <div class="grid-row">
                         <div class="flex-item">Basketball Court</div>
@@ -331,12 +315,9 @@
                         </label>
                         <label class="flex-item">
                             <input type="radio" value="No" name="priority"> <span></span>
-                        </label>                  
-                        {% for key, value in error_messages.items %} 
-                            {% if key == 'priority' %}
-                                <p style="color:red">{{value}}</p>
-                            {% endif %}
-                        {% endfor %}           
+                        </label> {% for key, value in error_messages.items %} {% if key == 'priority' %}
+                        <p style="color:red">{{value}}</p>
+                        {% endif %} {% endfor %}
                     </div>
                     <div class="grid-row">
                         <div class="flex-item">Badminton Court</div>
@@ -345,12 +326,9 @@
                         </label>
                         <label class="flex-item">
                             <input type="radio" value="No" name="priority1" > <span></span>
-                        </label>   
-                        {% for key, value in error_messages.items %} 
-                        {% if key == 'priority1' %}
-                            <p style="color:red">{{value}}</p>
-                        {% endif %}
-                    {% endfor %}                     
+                        </label> {% for key, value in error_messages.items %} {% if key == 'priority1' %}
+                        <p style="color:red">{{value}}</p>
+                        {% endif %} {% endfor %}
                     </div>
                     <div class="grid-row">
                         <div class="flex-item">Tennis Court</div>
@@ -359,12 +337,9 @@
                         </label>
                         <label class="flex-item">
                             <input type="radio" value="No" name="priority2"> <span></span>
-                        </label> 
-                        {% for key, value in error_messages.items %} 
-                        {% if key == 'priority2' %}
-                            <p style="color:red">{{value}}</p>
-                        {% endif %}
-                    {% endfor %}                       
+                        </label> {% for key, value in error_messages.items %} {% if key == 'priority2' %}
+                        <p style="color:red">{{value}}</p>
+                        {% endif %} {% endfor %}
                     </div>
 
 
@@ -397,11 +372,9 @@
                         </label>
                     </div>
 
-                    {% for key, value in error_messages.items %} 
-                        {% if key == 'priority3' %}
-                            <p style="color:red">{{value}}</p>
-                        {% endif %}
-                    {% endfor %}
+                    {% for key, value in error_messages.items %} {% if key == 'priority3' %}
+                    <p style="color:red">{{value}}</p>
+                    {% endif %} {% endfor %}
 
                     <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
                     <input type="submit" name="submit" class="submit action-button" value="Submit" />
@@ -416,7 +389,7 @@
         var left, opacity, scale; //fieldset properties which we will animate
         var animating; //flag to prevent quick multi-click glitches
 
-        $(".next").click(function () {
+        $(".next").click(function() {
             if (animating) return false;
             animating = true;
 
@@ -432,7 +405,7 @@
             current_fs.animate({
                 opacity: 0
             }, {
-                step: function (now, mx) {
+                step: function(now, mx) {
                     //as the opacity of current_fs reduces to 0 - stored in "now"
                     //1. scale current_fs down to 80%
                     scale = 1 - (1 - now) * 0.2;
@@ -450,7 +423,7 @@
                     });
                 },
                 duration: 800,
-                complete: function () {
+                complete: function() {
                     current_fs.hide();
                     animating = false;
                 },
@@ -459,7 +432,7 @@
             });
         });
 
-        $(".previous").click(function () {
+        $(".previous").click(function() {
             if (animating) return false;
             animating = true;
 
@@ -475,7 +448,7 @@
             current_fs.animate({
                 opacity: 0
             }, {
-                step: function (now, mx) {
+                step: function(now, mx) {
                     //as the opacity of current_fs reduces to 0 - stored in "now"
                     //1. scale previous_fs from 80% to 100%
                     scale = 0.8 + (1 - now) * 0.2;
@@ -492,7 +465,7 @@
                     });
                 },
                 duration: 800,
-                complete: function () {
+                complete: function() {
                     current_fs.hide();
                     animating = false;
                 },
