@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
+{% load static %} {% load crispy_forms_tags%}
 
 <head>
     <meta charset="utf-8">
@@ -32,7 +32,7 @@
                     <button type="button" class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-secondary rounded-pill" style="width: 2rem; height:2rem;">3</button>
                 </div>
             </div>
-            <div class="card" style="margin:10rem auto;">
+            <div class="card" style="margin:5rem auto;">
                 <div class="row">
                     <div class="col-md-12">
                         <!-- <label for="email" class="form-label">Email address</label>
@@ -41,17 +41,21 @@
                             <form action="/parents_info">
                                 <h2>Consent Form:</h2>
                                 <br>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae, neque voluptatem quas accusamus expedita quaerat at pariatur delectus quos provident iure, aperiam cupiditate earum deleniti porro tenetur illum necessitatibus
-                                    mollitia in? Beatae nisi pariatur ipsa tempora incidunt officia rem voluptate optio itaque quia reprehenderit inventore dolores autem, officiis reiciendis, cumque odit illum quasi. Ratione quisquam vero error illo pariatur
-                                    labore iusto nemo minima! Amet expedita officiis facilis minus culpa ratione aperiam quaerat illum praesentium quo rem quos a laborum quibusdam, sint aliquid blanditiis cum officia repellat quia quae ipsum placeat non
-                                    ea. Cumque minus laudantium aliquid. Iusto ratione provident consequatur, ea fugiat esse eos numquam porro dolorum tenetur id sint beatae error quisquam autem tempora quod incidunt iure adipisci! Quae.</p>
-                                <br>
-                                <input type="checkbox"> I Agree
-                                <br>
-                                <div class="d-flex justify-content-end">
-                                    <input type="submit" class="btn btn-success ">
-                                </div>
-                            </form>
+                                <p>Dear Parents,
+                                    <br> Due to COVID-19, the school education has taken a big turn towards online. Blending online with the activity, project-oriented learning is extremely important. Using some simple activities, using shared devices,
+                                    mobiles, and the web is a way to reach out to at least those children who have access to devices and networks. We would like to integrate technology with conventionally used nutrition education programs in such a way
+                                    that your child can assess the diet quality of his/her and set a goal to improve it further. We would like an opportunity to educate children about the food diversity, the good practices of past, present, often poor
+                                    quality trusted by commercials, impact of dietary lifestyles, connection between health, nutrition and education and best use of communication technology for better living. We request you to enable your child to participate
+                                    in our NUTRI-INFOTAINMENT SESSIONS which is a part of a small research project undertaken as a community extension program. For this program, we request interested students to register for the program by filling out
+                                    the survey. Registered students will participate in 3 NUTRI-INFOTAINMENT SESSIONS which will be for 1 hour (each) at a convenient time on an e-platform which will have nutrition and health awareness sessions such as:
+                                    1. Basic Nutrition, Diet Diversity and communicating the importance of Micro-greens & Nutri- Garden 2. Importance of Health and Immuno-nutrition with a focus on dietary essential fatty acid ratio (omega 3, omega 6)
+                                    and total fat content in the diet. 3. JUNCS food consumption, Innovative snack-recipes for children/adolescents and Physical activity patterns. Subject to explicit consent by you the nutrition and BMI parameters of
+                                    your child will be stored, and visualized on graph against the background of WHO norms. This will be on the website with restricted access. This will not be published until you so specify. In any case we plan to encrypt
+                                    personal information (like name, address etc.) and the same will not be seen un-encrypted on the site. Looking forward to your child’s involvement and your active participation in our effort to communicate a behavioural
+                                    change. Any information generated in this program will be used for educational purposes and not published on any social media platform. Thanking you. CTARA TEAM</p>
+                                <br> {{form|crispy}}
+                                <input type="submit" class="btn btn-success" value="Next">
+                             </form>
                         </div>
                     </div>
                 </div>
