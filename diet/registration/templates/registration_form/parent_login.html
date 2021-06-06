@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %} {% load crispy_forms_tags%}
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/consent.css' %}">
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+    <title>Students Information</title>
+</head>
+
+<body>
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="card" style="margin:5rem auto;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="consent-card">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{message}}
+                                    </div>
+                                {% endfor %}
+                             {% endif %} 
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                <h2>Parent Login</h2>
+                                <br>
+                                {{form | crispy }}
+                                <input type="submit" value="Login" class="mt-4 btn btn-success">
+                            </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+
+</body>
+
+</html>

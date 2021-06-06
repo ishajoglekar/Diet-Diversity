@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+from django.contrib.auth import login,authenticate
 
 import environ
 from cryptography.fernet import Fernet
@@ -274,3 +275,20 @@ def students_info(request):
         else:            
             print(form.errors.as_data() )
             return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
+
+
+def parent_login(request):
+    if request.method == "GET":
+        form = AuthenticationForm()
+        return render(request,'registration_form/parent_login.html',{'form':form})
+    else:
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        form = AuthenticationForm(request.POST)
+        if user is not None:
+            login(request,user)
+            return redirect('/home')
+        else:
+            messages.error(request, 'Invalid credentials')
+            return render(request,'registration_form/parent_login.html',{'form':form})
