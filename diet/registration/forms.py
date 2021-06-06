@@ -1,6 +1,8 @@
 from django.forms import ModelForm
 from django import forms
 from .models import ParentsInfo, StudentsInfo
+from bootstrap_datepicker_plus import DatePickerInput
+
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
@@ -43,8 +45,11 @@ class StudentsInfoForm(ModelForm):
          ('Other','Other')]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     
-    address= forms.CharField(max_length=100,widget= forms.Textarea())
+    address= forms.CharField(max_length=255,widget= forms.Textarea())
 
+    dob = forms.DateField(
+        widget=DatePickerInput(format='%m/%d/%Y')
+    )
     
     def clean(self):
         super(StudentsInfoForm, self).clean()

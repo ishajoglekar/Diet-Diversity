@@ -38,6 +38,7 @@
                         <div class="consent-card">
                             <form action="" method="POST">
                                 {% csrf_token %}
+                                {{form.media}}
                                 <h2>Parents Information</h2>
                                 <br>
                                 <div class="col-md-12">
