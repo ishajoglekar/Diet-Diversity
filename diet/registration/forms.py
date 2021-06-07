@@ -13,11 +13,13 @@ class ConsentForm(forms.Form):
 class ParentsInfoForm(ModelForm):
     class Meta:
         model = ParentsInfo
-        fields = ['name','email','gender','age','occupation','state','city','edu','address','pincode','no_of_family_members','type_of_family','religion','children_count']
+        fields = ['gender','age','occupation','state','city','edu','address','pincode','no_of_family_members','type_of_family','religion','children_count']
         labels = {
             'edu': 'Education',
         }
 
+    email = forms.EmailField()
+    name = forms.CharField()
     GENDER_CHOICES=[('Male','Male'),
          ('Female','Female'),
          ('Other','Other')]
@@ -38,8 +40,9 @@ class ParentsInfoForm(ModelForm):
 class StudentsInfoForm(ModelForm):
     class Meta:
         model = StudentsInfo
-        fields = ['name','school','gender','rollno','dob','address']
+        fields = ['school','gender','rollno','dob','address']
         
+    name = forms.CharField()    
     GENDER_CHOICES=[('Male','Male'),
          ('Female','Female'),
          ('Other','Other')]

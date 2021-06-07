@@ -15,18 +15,19 @@ import random
 
 from registration.models import *
 from .forms import ConsentForm,ParentsInfoForm, StudentsInfoForm
+from shared.encryption import EncryptionHelper
 
-env = environ.Env()
-environ.Env.read_env()
-key: bytes = bytes(env('KEY'),'ascii')
-f = Fernet(key)
+# env = environ.Env()
+# environ.Env.read_env()
+# key: bytes = bytes(env('KEY'),'ascii')
+# f = Fernet(key)
 
-error_messages = dict()
+# error_messages = dict()
 
-def encrypt(data):
-    stringBytes = bytes(data,'UTF-8')
-    encr = f.encrypt(stringBytes)
-    return encr
+# def encrypt(data):
+#     stringBytes = bytes(data,'UTF-8')
+#     encr = f.encrypt(stringBytes)
+#     return encr
 
 
 
@@ -52,16 +53,7 @@ def parents_info(request):
         user_creation_form =  UserCreationForm(request.POST)
 
         if form.is_valid() and user_creation_form.is_valid():            
-            # user = user_creation_form.save(commit=False)                        
-            # parent = form.save(commit=False)                 
-            # userdata = serializers.serialize("json", [user])
-            # request.session['parent_username'] = user.username
-            # request.session['parent_password'] = user.password
-            # print(request.POST)
             request.session['data'] = request.POST
-            # request.session['userdata'] = userdata
-            # request.session['parentdata'] = parentdata          
-            #  print(request.session.get('parentuser'))  
             return redirect('/students_info')
         else:            
             print(form.errors.as_data() )
@@ -70,21 +62,28 @@ def parents_info(request):
 
 def students_info(request):
     if request.method == "GET":
-        print(request.session.get('data'))
         form = StudentsInfoForm()
         user_creation_form = UserCreationForm() 
         return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
     else:        
+        previousPOST = request.session.get('data')
         form = StudentsInfoForm(request.POST)
         studentuserform =  UserCreationForm(request.POST)
-        parentform = ParentsInfoForm(request.session.get('data'))
-        parentuserform =  UserCreationForm(request.session.get('data'))
+        parentform = ParentsInfoForm(previousPOST)
+        parentuserform =  UserCreationForm(previousPOST)
         if form.is_valid() and studentuserform.is_valid():                        
-                    
+            encryptionHelper = EncryptionHelper()
             parentUser = parentuserform.save(commit=False)
             parentUser.save()
             parent = parentform.save(commit=False)   
             parent.user = parentUser
+            # print(request.session.get('data'))
+            # print(parent.name)
+            # print(type(parent.name))
+            parent.name = encryptionHelper.encrypt(previousPOST['name'])
+            print(encryptionHelper.decrypt(parent.name))
+            parent.email = encryptionHelper.encrypt(previousPOST['email'])
+            print(encryptionHelper.decrypt(parent.email))
             parent.save()
 
 
@@ -92,6 +91,8 @@ def students_info(request):
             studentuser.save()   
             student = form.save(commit=False)
             student.user = studentuser
+            student.name = encryptionHelper.encrypt(request.POST['name'])
+            print(encryptionHelper.decrypt(student.name))
             student.parent = parent
             student.save()
             

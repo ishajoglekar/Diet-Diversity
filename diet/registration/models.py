@@ -69,9 +69,9 @@ class Education(models.Model):
   
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    email = models.CharField(max_length=255)
+    email = models.BinaryField(max_length=500)
     consent = models.BooleanField(default=True)
-    name = models.CharField(max_length=30)
+    name = models.BinaryField(max_length=500)
     gender = models.CharField(max_length=255)
     age = models.IntegerField()
     occupation = models.ForeignKey(Occupation,on_delete=models.CASCADE)
@@ -90,7 +90,7 @@ class ParentsInfo(models.Model):
 
 
 class School(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=50)
     address = models.CharField(max_length=255)
     pincode = models.IntegerField()
     state = models.ForeignKey(State,on_delete=models.CASCADE)
@@ -101,7 +101,7 @@ class School(models.Model):
 
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
+    name = models.BinaryField(max_length=500)
     school = models.ForeignKey(School,on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     rollno = models.IntegerField()
