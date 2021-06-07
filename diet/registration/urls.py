@@ -12,5 +12,4 @@ urlpatterns = [
     path('parents_info/',views.parents_info),
     path('students_info/',views.students_info),
     path('parent_login/',views.parent_login),
-
 ]  

@@ -3,9 +3,10 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login,authenticate
-
+from django.core import serializers
 import environ
 from cryptography.fernet import Fernet
+import json
 import xlwt
 import openpyxl
 import string
@@ -26,6 +27,85 @@ def encrypt(data):
     stringBytes = bytes(data,'UTF-8')
     encr = f.encrypt(stringBytes)
     return encr
+
+
+
+def home(request):
+    return render(request, "registration_form/home.html")
+
+def consent(request):
+    if request.method == "GET":
+        form = ConsentForm()
+        return render(request,'registration_form/consent.html',{'form':form})
+
+def parents_info(request):
+    if request.method == "GET":
+        form = ParentsInfoForm()
+        user_creation_form = UserCreationForm() 
+        return render(request,'registration_form/parents_info.html',{'form':form,'user_creation_form':user_creation_form})
+    else:
+        form = ParentsInfoForm(request.POST)
+        user_creation_form =  UserCreationForm(request.POST)
+
+        if form.is_valid() and user_creation_form.is_valid():            
+            user = user_creation_form.save(commit=False)                        
+            parent = form.save(commit=False)                 
+            userdata = serializers.serialize("json", [user])
+            parentdata = serializers.serialize("json", [parent])                                  
+            request.session['userdata'] = userdata
+            request.session['parentdata'] = parentdata          
+            # print(request.session.get('parentuser'))  
+            return redirect('/students_info')
+        else:            
+            print(form.errors.as_data() )
+            return render(request,'registration_form/parents_info.html',{'form':form,'user_creation_form':user_creation_form})
+    
+
+def students_info(request):
+    if request.method == "GET":
+        form = StudentsInfoForm()
+        user_creation_form = UserCreationForm() 
+        return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
+    else:        
+        form = StudentsInfoForm(request.POST)
+        user_creation_form =  UserCreationForm(request.POST)
+
+        if form.is_valid() and user_creation_form.is_valid():                        
+
+            parentdata = serializers.json.Deserializer(request.session.get('parentdata'))
+            print(parentdata)
+            userdata = serializers.json.Deserializer(request.session.get('userdata'))
+            print(parentdata)
+            # parentuser.save()
+            # parent.save()
+            
+            # user = user_creation_form.save(commit=False)
+            # user.save()            
+            # student = form.save(commit=False)
+            # student.user = user
+            # student.save()
+            # return redirect('/home')
+        else:            
+            print(form.errors.as_data())
+            return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
+
+
+def parent_login(request):
+    if request.method == "GET":
+        form = AuthenticationForm()
+        return render(request,'registration_form/parent_login.html',{'form':form})
+    else:
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        form = AuthenticationForm(request.POST)
+        if user is not None:
+            login(request,user)
+            return redirect('/home')
+        else:
+            messages.error(request, 'Invalid credentials')
+            return render(request,'registration_form/parent_login.html',{'form':form})
+
 
 
 # def show(request):    
@@ -223,72 +303,3 @@ def encrypt(data):
 #             r.save()
             
 #         return redirect(get)
-def home(request):
-    return render(request, "registration_form/home.html")
-
-def consent(request):
-    if request.method == "GET":
-        form = ConsentForm()
-        return render(request,'registration_form/consent.html',{'form':form})
-
-def parents_info(request):
-    if request.method == "GET":
-        form = ParentsInfoForm()
-        user_creation_form = UserCreationForm() 
-        return render(request,'registration_form/parents_info.html',{'form':form,'user_creation_form':user_creation_form})
-    else:
-        form = ParentsInfoForm(request.POST)
-        user_creation_form =  UserCreationForm(request.POST)
-        if form.is_valid() and user_creation_form.is_valid():
-            print("here")
-    
-            user = user_creation_form.save(commit=False)
-            user.save()
-            parent = form.save(commit=False)
-            parent.user = user
-            parent.save()
-            return redirect('/students_info')
-        else:
-            print("hereeee")
-            print(form.errors.as_data() )
-            return render(request,'registration_form/parents_info.html',{'form':form,'user_creation_form':user_creation_form})
-    
-
-def students_info(request):
-    if request.method == "GET":
-        form = StudentsInfoForm()
-        user_creation_form = UserCreationForm() 
-        return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
-    else:
-        print("here")
-        form = StudentsInfoForm(request.POST)
-        user_creation_form =  UserCreationForm(request.POST)
-
-        if form.is_valid() and user_creation_form.is_valid():
-            print("hereee")
-            user = user_creation_form.save(commit=False)
-            user.save()
-            student = form.save(commit=False)
-            student.user = user
-            student.save()
-            return redirect('/home')
-        else:            
-            print(form.errors.as_data() )
-            return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
-
-
-def parent_login(request):
-    if request.method == "GET":
-        form = AuthenticationForm()
-        return render(request,'registration_form/parent_login.html',{'form':form})
-    else:
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        form = AuthenticationForm(request.POST)
-        if user is not None:
-            login(request,user)
-            return redirect('/home')
-        else:
-            messages.error(request, 'Invalid credentials')
-            return render(request,'registration_form/parent_login.html',{'form':form})
