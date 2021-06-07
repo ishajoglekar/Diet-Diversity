@@ -118,13 +118,33 @@ def parent_login(request):
             messages.error(request, 'Invalid credentials')
             return render(request,'registration_form/parent_login.html',{'form':form})
 
-def show(request):
-    form1 = ParentsInfoForm()
-    user_creation_form1 = UserCreationForm() 
+def bulkRegister(request):
+    return render(request,'registration/bulkregistration.html')
 
-    form2 = StudentsInfoForm()
-    user_creation_form2 = UserCreationForm() 
-    return render(request,'registration/index.html',{'form1':form1,'form2':form2,'user_creation_form1':user_creation_form1,'user_creation_form2':user_creation_form2})
+
+def getTemplate(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="users.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Parents Data') # this will make a sheet named Users Data
+    ws2 = wb.add_sheet('Students Data')
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True    
+    columns = ["Parent Email","Parent Name","Gender","Age","Address","Pincode","No of family members","Children Count","City","Education","Occupation","Religion","State","Type of family"]
+    columns2 = ["Student Name","Address","Registration No","Gender","DOB","School"]    
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+
+    for col_num in range(len(columns2)):
+        ws2.write(row_num, col_num, columns2[col_num], font_style) # at 0 row 0 column 
+
+    wb.save(response)
+    return response    
 
 # def show(request):    
 #     if(request.method=="POST"):
