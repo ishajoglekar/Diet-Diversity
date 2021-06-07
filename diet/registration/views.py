@@ -40,21 +40,28 @@ def consent(request):
 
 def parents_info(request):
     if request.method == "GET":
-        form = ParentsInfoForm()
-        user_creation_form = UserCreationForm() 
+        if(request.session.get('data')):
+            form = ParentsInfoForm(request.session.get('data'))
+            user_creation_form = UserCreationForm(request.session.get('data'))
+        else:
+            form = ParentsInfoForm()
+            user_creation_form = UserCreationForm() 
         return render(request,'registration_form/parents_info.html',{'form':form,'user_creation_form':user_creation_form})
     else:
         form = ParentsInfoForm(request.POST)
         user_creation_form =  UserCreationForm(request.POST)
 
         if form.is_valid() and user_creation_form.is_valid():            
-            user = user_creation_form.save(commit=False)                        
-            parent = form.save(commit=False)                 
-            userdata = serializers.serialize("json", [user])
-            parentdata = serializers.serialize("json", [parent])                                  
-            request.session['userdata'] = userdata
-            request.session['parentdata'] = parentdata          
-            # print(request.session.get('parentuser'))  
+            # user = user_creation_form.save(commit=False)                        
+            # parent = form.save(commit=False)                 
+            # userdata = serializers.serialize("json", [user])
+            # request.session['parent_username'] = user.username
+            # request.session['parent_password'] = user.password
+            # print(request.POST)
+            request.session['data'] = request.POST
+            # request.session['userdata'] = userdata
+            # request.session['parentdata'] = parentdata          
+            #  print(request.session.get('parentuser'))  
             return redirect('/students_info')
         else:            
             print(form.errors.as_data() )
@@ -63,31 +70,35 @@ def parents_info(request):
 
 def students_info(request):
     if request.method == "GET":
+        print(request.session.get('data'))
         form = StudentsInfoForm()
         user_creation_form = UserCreationForm() 
         return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
     else:        
         form = StudentsInfoForm(request.POST)
-        user_creation_form =  UserCreationForm(request.POST)
+        studentuserform =  UserCreationForm(request.POST)
+        parentform = ParentsInfoForm(request.session.get('data'))
+        parentuserform =  UserCreationForm(request.session.get('data'))
+        if form.is_valid() and studentuserform.is_valid():                        
+                    
+            parentUser = parentuserform.save(commit=False)
+            parentUser.save()
+            parent = parentform.save(commit=False)   
+            parent.user = parentUser
+            parent.save()
 
-        if form.is_valid() and user_creation_form.is_valid():                        
 
-            parentdata = serializers.json.Deserializer(request.session.get('parentdata'))
-            print(parentdata)
-            userdata = serializers.json.Deserializer(request.session.get('userdata'))
-            print(parentdata)
-            # parentuser.save()
-            # parent.save()
+            studentuser = studentuserform.save(commit=False)
+            studentuser.save()   
+            student = form.save(commit=False)
+            student.user = studentuser
+            student.parent = parent
+            student.save()
             
-            # user = user_creation_form.save(commit=False)
-            # user.save()            
-            # student = form.save(commit=False)
-            # student.user = user
-            # student.save()
-            # return redirect('/home')
+            return redirect('/home')
         else:            
             print(form.errors.as_data())
-            return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
+            return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':studentuserform})
 
 
 def parent_login(request):
@@ -106,7 +117,13 @@ def parent_login(request):
             messages.error(request, 'Invalid credentials')
             return render(request,'registration_form/parent_login.html',{'form':form})
 
+def show(request):
+    form1 = ParentsInfoForm()
+    user_creation_form1 = UserCreationForm() 
 
+    form2 = StudentsInfoForm()
+    user_creation_form2 = UserCreationForm() 
+    return render(request,'registration/index.html',{'form1':form1,'form2':form2,'user_creation_form1':user_creation_form1,'user_creation_form2':user_creation_form2})
 
 # def show(request):    
 #     if(request.method=="POST"):

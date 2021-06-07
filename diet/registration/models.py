@@ -3,7 +3,6 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
-from registration.models import *
 
 # Create your models here.
 # class myValidate:
@@ -86,6 +85,10 @@ class ParentsInfo(models.Model):
     religion = models.ForeignKey(ReligiousBelief,on_delete=models.CASCADE)
     children_count = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
+
 class School(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
@@ -104,3 +107,7 @@ class StudentsInfo(models.Model):
     rollno = models.IntegerField()
     gender = models.CharField(max_length=255)
     dob = models.DateField()
+    parent = models.ForeignKey(ParentsInfo,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
