@@ -14,4 +14,6 @@ urlpatterns = [
     path('parent_login/',views.parent_login),
     path('bulkRegister/',views.bulkRegister),
     path('getTemplate/',views.getTemplate),
+    path('downloadData/',views.downloadData),
+    
 ]  
