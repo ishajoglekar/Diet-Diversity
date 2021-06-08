@@ -84,6 +84,8 @@ class ParentsInfo(models.Model):
     type_of_family = models.ForeignKey(FamilyType,on_delete=models.CASCADE)
     religion = models.ForeignKey(ReligiousBelief,on_delete=models.CASCADE)
     children_count = models.IntegerField()
+    first_password = models.CharField(max_length=20,default='helloworld14')
+    password_changed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -95,6 +97,7 @@ class School(models.Model):
     pincode = models.IntegerField()
     state = models.ForeignKey(State,on_delete=models.CASCADE)
     city = models.ForeignKey(City,on_delete=models.CASCADE)
+    
 
     def __str__(self):
         return self.name
@@ -108,6 +111,8 @@ class StudentsInfo(models.Model):
     gender = models.CharField(max_length=255)
     dob = models.DateField()
     parent = models.ForeignKey(ParentsInfo,on_delete=models.CASCADE)
+    first_password = models.CharField(max_length=20,default='helloworld14')
+    password_changed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

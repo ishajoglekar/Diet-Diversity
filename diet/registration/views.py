@@ -7,6 +7,7 @@ from django.core import serializers
 import environ
 from cryptography.fernet import Fernet
 import json
+from openpyxl.descriptors.base import DateTime
 import xlwt
 import openpyxl
 import string
@@ -120,12 +121,137 @@ def parent_login(request):
             return render(request,'registration_form/parent_login.html',{'form':form})
 
 def bulkRegister(request):
-    return render(request,'registration/bulkregistration.html')
+    if(request.method=="GET"):
+        return render(request,'registration/bulkregistration.html')
+    else:
+        print(request.POST)
+        print(request.FILES)
+        excel_file = request.FILES["excel_file"]
+
+        # you may put validations here to check extension or file size
+
+        wb = openpyxl.load_workbook(excel_file)
+
+        # getting a particular sheet by name out of many sheets
+        parentSheet = wb["Parents Data"]
+        studentSheet = wb["Students Data"]
+
+        encryptionHelper = EncryptionHelper()
+
+        parent_data = list()
+        # iterating over the rows and
+        # getting value from each cell in row        
+        for row in parentSheet.iter_rows():
+            row_data = list()
+            for cell in row:                                
+                if cell.row == 1 :                
+                    continue
+                if cell.column_letter == 'A':                    
+                    row_data.append(encryptionHelper.encrypt(str(cell.value)))
+                elif cell.column_letter == 'B':
+                    row_data.append(encryptionHelper.encrypt(str(cell.value)))
+                    row_data.append(str(cell.value.lower().replace(" ",""))+str(random.randint(11,99)))
+                elif cell.column_letter == 'C':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'D':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'E':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'F':
+                    row_data.append(int(cell.value))
+                elif cell.column_letter == 'G':
+                    row_data.append(int(cell.value))
+                elif cell.column_letter == 'H':
+                    row_data.append(int(cell.value))
+                elif cell.column_letter == 'I':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'J':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'K':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'L':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'M':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'N':
+                    row_data.append(str(cell.value))
+            parent_data.append(row_data)
+
+        student_data = list()
+        # iterating over the rows and
+        # getting value from each cell in row        
+        for row in studentSheet.iter_rows():
+            row_data = list()
+            for cell in row:                                
+                if cell.row == 1 :                
+                    continue
+                if cell.column_letter == 'A':
+                    row_data.append(encryptionHelper.encrypt(str(cell.value)))
+                    row_data.append(str(cell.value.lower().replace(" ",""))+str(random.randint(11,99)))
+                elif cell.column_letter == 'B':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'C':
+                    row_data.append(int(cell.value))
+                elif cell.column_letter == 'D':
+                    row_data.append(str(cell.value))
+                elif cell.column_letter == 'E':
+                    row_data.append(cell.value)
+                elif cell.column_letter == 'F':
+                    row_data.append(str(cell.value))
+            student_data.append(row_data)
+
+        parentList = []
+        for index,row in enumerate(parent_data):
+            if index == 0:
+                parentList.append(0)
+                continue  
+            #creating parent user
+            password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 8))                      
+            parentUser = User(username=row[2])
+            parentUser.set_password(password)
+            parentUser.save()
+
+            #getting data from db for foreign keys
+            city = City.objects.filter(city=row[9].lower()).first()
+            state = State.objects.filter(state=row[10].lower()).first()
+            education = Education.objects.filter(education=row[11].lower()).first()
+            occupation = Occupation.objects.filter(occupation=row[12].lower()).first()
+            religion = ReligiousBelief.objects.filter(religion=row[13].lower()).first()
+            familyType = FamilyType.objects.filter(family=row[14].lower()).first()  
+            #creating parent
+            parent = ParentsInfo(email=row[0],name=row[1],gender=row[3],age=row[4],address=row[5],pincode=row[6],no_of_family_members=row[7],children_count=row[8],city=city,state=state,edu=education,occupation=occupation,religion=religion,type_of_family=familyType,first_password=password)
+            parent.user = parentUser
+            parentList.append(parent)
+            parent.save()
+        
+        for index,row in enumerate(student_data):
+            if index == 0:
+                continue  
+            #creating student user
+            password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 8))
+            studentUser = User(username=row[1])
+            studentUser.set_password(password)
+            studentUser.save()
+
+            #getting data from db for foreign keys
+
+            parent = parentList[index]
+            school = School.objects.filter(name=row[6]).first()
+
+            #creating student
+            student = StudentsInfo(name=row[0],address=row[2],rollno=row[3],gender=row[4],dob=row[5],school=school,first_password=password)
+            student.parent = parent
+            student.user = studentUser
+            student.save()
+        
+            
+            
+        return redirect('/bulkRegister')
 
 
 def getTemplate(request):
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="users.xls"'
+    response['Content-Disposition'] = 'attachment; filename="template.xlsx"'
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Parents Data') # this will make a sheet named Users Data
@@ -135,7 +261,7 @@ def getTemplate(request):
 
     font_style = xlwt.XFStyle()
     font_style.font.bold = True    
-    columns = ["Parent Email","Parent Name","Gender","Age","Address","Pincode","No of family members","Children Count","City","Education","Occupation","Religion","State","Type of family"]
+    columns = ["Parent Email","Parent Name","Gender","Age","Address","Pincode","No of family members","Children Count","City","State","Education","Occupation","Religion","Type of family"]
     columns2 = ["Student Name","Address","Registration No","Gender","DOB","School"]    
 
     for col_num in range(len(columns)):
@@ -154,7 +280,7 @@ def downloadData(request):
     response['Content-Disposition'] = 'attachment; filename="students.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Student\'s Data') # this will make a sheet named Users Data
+    ws = wb.add_sheet('Student\'s Data') # this will make a sheet named Students Data
 
     # Sheet header, first row
     row_num = 0

@@ -40,7 +40,8 @@
                             </div>    
                             <div class="row" style="margin-top:5%">
                                 <div>
-                                    <form action="">
+                                    <form action="" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
                                         <input type="file" title="Upload excel file" name="excel_file" style="border: 1px solid black; padding: 5px;" required="required" accept=".xls,.xlsx,.csv">
                                         <input type="submit" class="btn btn-success" value="Upload">
                                     </form>
