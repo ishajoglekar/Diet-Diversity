@@ -1,3 +1,4 @@
+import io
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import HttpResponse
@@ -13,6 +14,7 @@ import openpyxl
 import string
 import random
 import datetime
+import xlsxwriter
 
 
 from registration.models import *
@@ -250,27 +252,30 @@ def bulkRegister(request):
 
 
 def getTemplate(request):
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="template.xlsx"'
 
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Parents Data') # this will make a sheet named Users Data
-    ws2 = wb.add_sheet('Students Data')
-    # Sheet header, first row
-    row_num = 0
+    output = io.BytesIO()
 
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True    
+    wb =  xlsxwriter.Workbook(output)
+    ws = wb.add_worksheet("Parents Data")
+    ws2 = wb.add_worksheet("Students Data")
+    
     columns = ["Parent Email","Parent Name","Gender","Age","Address","Pincode","No of family members","Children Count","City","State","Education","Occupation","Religion","Type of family"]
     columns2 = ["Student Name","Address","Registration No","Gender","DOB","School"]    
 
+    row_num = 0    
+
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+        ws.write(row_num, col_num, columns[col_num]) # at 0 row 0 column 
 
     for col_num in range(len(columns2)):
-        ws2.write(row_num, col_num, columns2[col_num], font_style) # at 0 row 0 column 
+        ws2.write(row_num, col_num, columns2[col_num]) # at 0 row 0 column 
+    wb.close()
 
-    wb.save(response)
+    # construct response
+    output.seek(0)
+    response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response['Content-Disposition'] = "attachment; filename=test.xlsx"
+
     return response  
 
 
@@ -279,125 +284,126 @@ def downloadData(request):
     response['Content-Disposition'] = 'attachment; filename="students.xlsx"'
 
     wb = xlwt.Workbook(encoding='utf-8')
-    parentSheet = wb.add_sheet('Parents Data') 
+    parentSheet = wb.active_sheet
+    parentSheet.title = "Parents Data"
     studentSheet = wb.add_sheet('Students Data') 
 
     # Sheet header, first row
-    row_num = 0
+    # row_num = 0
 
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True
-    encryptionHelper = EncryptionHelper()
+    # encryptionHelper = EncryptionHelper()
 
 
-    #parent sheet
-    parentColumns = ['Name','Email','Age','Gender','Address','City','State','Pincode','Education','Occupation','Religion','Family count','Children count','Family Type','Username','Password']
+    # #parent sheet
+    # parentColumns = ['Name','Email','Age','Gender','Address','City','State','Pincode','Education','Occupation','Religion','Family count','Children count','Family Type','Username','Password']
 
-    for col_num in range(len(parentColumns)):
-        parentSheet.write(row_num, col_num, parentColumns[col_num], font_style) # at 0 row 0 column 
+    # parentSheet.append(parentColumns)
 
-    rows = ParentsInfo.objects.all().values_list('name','email','age','gender','address','city','state','pincode','edu','occupation','religion','no_of_family_members','children_count','type_of_family','user','first_password','password_changed')
+    # for col_num in range(len(parentColumns)):
+    #     parentSheet.write(row_num, col_num, parentColumns[col_num], font_style) # at 0 row 0 column 
 
-    for row in rows:        
-        row_num += 1
-        for col_num in range(len(parentColumns)):            
-            if(col_num==0):  
-                print(encryptionHelper.decrypt(row[col_num]))              
-                parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]), font_style)
+    # rows = ParentsInfo.objects.all().values_list('name','email','age','gender','address','city','state','pincode','edu','occupation','religion','no_of_family_members','children_count','type_of_family','user','first_password','password_changed')
+
+    # for row in rows:        
+    #     row_num += 1
+    #     for col_num in range(len(parentColumns)):            
+    #         if(col_num==0):  
+    #             print(encryptionHelper.decrypt(row[col_num]))              
+    #             parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]), font_style)
             
-            elif(col_num==1):
-                print(encryptionHelper.decrypt(row[col_num]))              
-                parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]), font_style)
+    #         elif(col_num==1):
+    #             print(encryptionHelper.decrypt(row[col_num]))              
+    #             parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]), font_style)
 
-            elif(col_num==5):
-                city = City.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, city.city, font_style)
+    #         elif(col_num==5):
+    #             city = City.objects.get(pk=row[col_num])
+    #             parentSheet.write(row_num, col_num, city.city, font_style)
 
-            elif(col_num==6):
-                state = State.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, state.state, font_style)
+    #         elif(col_num==6):
+    #             state = State.objects.get(pk=row[col_num])
+    #             parentSheet.write(row_num, col_num, state.state, font_style)
 
-            elif(col_num==8):
-                education = Education.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, education.education, font_style)
+    #         elif(col_num==8):
+    #             education = Education.objects.get(pk=row[col_num])
+    #             parentSheet.write(row_num, col_num, education.education, font_style)
 
-            elif(col_num==9):
-                occupation = Occupation.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, occupation.occupation, font_style)
+    #         elif(col_num==9):
+    #             occupation = Occupation.objects.get(pk=row[col_num])
+    #             parentSheet.write(row_num, col_num, occupation.occupation, font_style)
 
-            elif(col_num==10):
-                religion = ReligiousBelief.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, religion.religion, font_style)
+    #         elif(col_num==10):
+    #             religion = ReligiousBelief.objects.get(pk=row[col_num])
+    #             parentSheet.write(row_num, col_num, religion.religion, font_style)
 
-            elif(col_num==13):
-                familyType = FamilyType.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, familyType.family, font_style)
+    #         elif(col_num==13):
+    #             familyType = FamilyType.objects.get(pk=row[col_num])
+    #             parentSheet.write(row_num, col_num, familyType.family, font_style)
 
-            elif(col_num==14):
-                user = User.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, user.username, font_style)
+    #         elif(col_num==14):
+    #             user = User.objects.get(pk=row[col_num])
+    #             parentSheet.write(row_num, col_num, user.username, font_style)
 
-            elif(col_num==15):
-                msg = row[col_num]
-                if row[col_num+1]:
-                    msg = "Already Changed"
-                parentSheet.write(row_num, col_num, msg, font_style)
+    #         elif(col_num==15):
+    #             msg = row[col_num]
+    #             if row[col_num+1]:
+    #                 msg = "Already Changed"
+    #             parentSheet.write(row_num, col_num, msg, font_style)
 
-            elif col_num==16:
-                continue
+    #         elif col_num==16:
+    #             continue
 
-            else:
-                print(row[col_num])
-                parentSheet.write(row_num, col_num, row[col_num], font_style)
+    #         else:
+    #             print(row[col_num])
+    #             parentSheet.write(row_num, col_num, row[col_num], font_style)
 
 
-    #student sheet
-    studentColumns = ['Name','Roll No','DOB','Gender','Address','School','Parent\'s Email','Username', 'Password']
+    # #student sheet
+    # studentColumns = ['Name','Roll No','DOB','Gender','Address','School','Parent\'s Email','Username', 'Password']
 
-    for col_num in range(len(studentColumns)):
-        studentSheet.write(row_num, col_num, studentColumns[col_num], font_style) # at 0 row 0 column 
+    # for col_num in range(len(studentColumns)):
+    #     studentSheet.write(row_num, col_num, studentColumns[col_num], font_style) # at 0 row 0 column 
 
     
-    rows = StudentsInfo.objects.all().values_list('name','rollno','dob','gender','address','school','parent','user','first_password','password_changed')    
+    # rows = StudentsInfo.objects.all().values_list('name','rollno','dob','gender','address','school','parent','user','first_password','password_changed')    
 
-    for row in rows:        
-        row_num += 1
-        for col_num in range(len(studentColumns)):            
-            if(col_num==0):  
-                print(encryptionHelper.decrypt(row[col_num]))              
-                studentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]), font_style)
+    # for row in rows:        
+    #     row_num += 1
+    #     for col_num in range(len(studentColumns)):            
+    #         if(col_num==0):  
+    #             print(encryptionHelper.decrypt(row[col_num]))              
+    #             studentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]), font_style)
             
-            elif(col_num==2):
-                print(row[col_num].strftime('%d/%b/%Y'))
-                studentSheet.write(row_num, col_num, row[col_num].strftime('%d/%b/%Y'), font_style)
+    #         elif(col_num==2):
+    #             print(row[col_num].strftime('%d/%b/%Y'))
+    #             studentSheet.write(row_num, col_num, row[col_num].strftime('%d/%b/%Y'), font_style)
 
-            elif(col_num==5):
-                school = School.objects.get(pk=row[col_num])
-                studentSheet.write(row_num, col_num, school.name, font_style)
+    #         elif(col_num==5):
+    #             school = School.objects.get(pk=row[col_num])
+    #             studentSheet.write(row_num, col_num, school.name, font_style)
 
-            elif(col_num==6):
-                parent = ParentsInfo.objects.get(pk=row[col_num])
-                studentSheet.write(row_num, col_num, encryptionHelper.decrypt(parent.email), font_style)
+    #         elif(col_num==6):
+    #             parent = ParentsInfo.objects.get(pk=row[col_num])
+    #             studentSheet.write(row_num, col_num, encryptionHelper.decrypt(parent.email), font_style)
 
-            elif(col_num==7):
-                user = User.objects.get(pk=row[col_num])
-                print(user.username)
-                studentSheet.write(row_num, col_num, user.username, font_style)
+    #         elif(col_num==7):
+    #             user = User.objects.get(pk=row[col_num])
+    #             print(user.username)
+    #             studentSheet.write(row_num, col_num, user.username, font_style)
 
-            elif(col_num==8):
-                msg = row[col_num]
-                if row[col_num+1]:
-                    msg = "Already Changed"
-                studentSheet.write(row_num, col_num, msg, font_style)
+    #         elif(col_num==8):
+    #             msg = row[col_num]
+    #             if row[col_num+1]:
+    #                 msg = "Already Changed"
+    #             studentSheet.write(row_num, col_num, msg, font_style)
 
-            elif col_num==9:
-                continue
+    #         elif col_num==9:
+    #             continue
 
-            else:
-                print(row[col_num])
-                studentSheet.write(row_num, col_num, row[col_num], font_style)
+    #         else:
+    #             print(row[col_num])
+    #             studentSheet.write(row_num, col_num, row[col_num], font_style)
     
-    wb.save(response)
+    wb.save('students.xlsx')
     return response
 
                 
