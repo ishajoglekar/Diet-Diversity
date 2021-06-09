@@ -2,6 +2,7 @@ from os import name
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from shared.encryption import EncryptionHelper
 
 
 # Create your models here.
@@ -67,6 +68,18 @@ class Education(models.Model):
     def __str__(self):
         return self.education
   
+class School(models.Model):
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=255)
+    pincode = models.IntegerField()
+    state = models.ForeignKey(State,on_delete=models.CASCADE)
+    city = models.ForeignKey(City,on_delete=models.CASCADE)
+    
+
+    def __str__(self):
+        return self.name
+
+
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     email = models.BinaryField(max_length=500)
@@ -88,17 +101,15 @@ class ParentsInfo(models.Model):
     password_changed = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        encryptionHelper = EncryptionHelper()
+        return encryptionHelper.decrypt(self.name)
 
 
-class School(models.Model):
+class TeacherInCharge(models.Model):
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    address = models.CharField(max_length=255)
-    pincode = models.IntegerField()
-    state = models.ForeignKey(State,on_delete=models.CASCADE)
-    city = models.ForeignKey(City,on_delete=models.CASCADE)
+    school = models.OneToOneField(School,on_delete=models.CASCADE)
     
-
     def __str__(self):
         return self.name
 
@@ -111,8 +122,10 @@ class StudentsInfo(models.Model):
     gender = models.CharField(max_length=255)
     dob = models.DateField()
     parent = models.ForeignKey(ParentsInfo,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherInCharge,on_delete=models.CASCADE)
     first_password = models.CharField(max_length=20,default='helloworld14')
     password_changed = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        encryptionHelper = EncryptionHelper()
+        return encryptionHelper.decrypt(self.name)
