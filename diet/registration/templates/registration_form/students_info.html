@@ -11,7 +11,7 @@
 {% endblock %}
     
 {% block title %}
-    <title>Consent Form</title>
+    <title>Student Registration</title>
 {% endblock %}
 
 
@@ -60,6 +60,9 @@
 
                                 <div class="col-md-6">
                                     {{ form.dob|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.teacher|as_crispy_field }}
                                 </div>
                                 <div class="col-md-6">
                                     {{ form.gender|as_crispy_field }}
