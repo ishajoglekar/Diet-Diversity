@@ -2,7 +2,7 @@ from django.forms import ModelForm
 from django import forms
 from .models import ParentsInfo, StudentsInfo
 from bootstrap_datepicker_plus import DatePickerInput
-
+import datetime
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
@@ -42,16 +42,28 @@ class StudentsInfoForm(ModelForm):
         model = StudentsInfo
         fields = ['school','gender','rollno','dob','address']
         
-    name = forms.CharField()    
+    labels = {
+            'dob': 'Date Of Birth',
+        }
+    name = forms.CharField() 
+      
     GENDER_CHOICES=[('Male','Male'),
          ('Female','Female'),
          ('Other','Other')]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     
     address= forms.CharField(max_length=255,widget= forms.Textarea())
+    dt = datetime.datetime.now()
+    dt = dt.replace(year=dt.year-5) 
+    print(dt.strftime("%m/%d/%Y"))
+    widgets = {
+            'start_date': DatePickerInput(), # python date-time format
+            'end_date': dt.strftime("%m/%d/%Y"),
+        }
 
+    
     dob = forms.DateField(
-        widget=DatePickerInput(format='%m/%d/%Y')
+        widget=DatePickerInput(widgets)
     )
     
     def clean(self):
