@@ -15,7 +15,7 @@ import string
 import random
 import datetime
 from django.contrib.auth import logout
-
+from django.contrib.auth.decorators import login_required
 from registration.models import *
 from .forms import ConsentForm,ParentsInfoForm, StudentsInfoForm
 from shared.encryption import EncryptionHelper
@@ -119,11 +119,12 @@ def parent_login(request):
         form = AuthenticationForm(request.POST)
         if user is not None:
             login(request,user)
-            return redirect('/home')
+            return redirect('/dashboard')
         else:
             messages.error(request, 'Invalid credentials')
             return render(request,'registration_form/parent_login.html',{'form':form})
 
+@login_required(login_url='/parent_login')
 def bulkRegister(request):
     if(request.method=="GET"):
         return render(request,'registration/bulkregistration.html')
@@ -252,7 +253,7 @@ def bulkRegister(request):
             
         return redirect('/bulkRegister')
 
-
+@login_required(login_url='/parent_login')
 def getTemplate(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="template.xlsx"'
@@ -277,7 +278,7 @@ def getTemplate(request):
     wb.save(response)
     return response  
 
-
+@login_required(login_url='/parent_login')
 def downloadData(request):
     print('hereee')
     response = HttpResponse(content_type='application/ms-excel')
@@ -341,6 +342,7 @@ def downloadData(request):
     wb.save(response)
     return response
 
+@login_required(login_url='/parent_login')
 def dashboard(request):
     if request.method == "GET":
         if request.user.is_authenticated:
@@ -351,15 +353,14 @@ def dashboard(request):
                 student.name = helper.decrypt(student.name)
             return render(request,'registration_form/dashboard.html',{'students':students})
         else:
-            form = AuthenticationForm()
-            return render(request,'registration_form/parent_login.html',{'form':form})
+            return redirect('/parent_login')
 
-
-
+@login_required(login_url='/parent_login')
 def logoutU(request):
     logout(request)
     return redirect('/parent_login')
-                
+
+@login_required(login_url='/parent_login')             
 def addStudentForm(request):
     if request.method == "GET":
         form = StudentsInfoForm()

@@ -42,6 +42,9 @@ class StudentsInfoForm(ModelForm):
         model = StudentsInfo
         fields = ['school','gender','rollno','dob','address']
         
+    labels = {
+            'dob': 'Date Of Birth',
+        }
     name = forms.CharField() 
       
     GENDER_CHOICES=[('Male','Male'),
