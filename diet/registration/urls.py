@@ -14,5 +14,8 @@ urlpatterns = [
     path('bulkRegister/',views.bulkRegister),
     path('getTemplate/',views.getTemplate),
     path('downloadData/',views.downloadData),
-    
+    path('dashboard/',views.dashboard),
+    path('logout/',views.logoutU),
+    path('addStudentForm/',views.addStudentForm),
+    # path('addStudent/',views.addStudent),
 ]  

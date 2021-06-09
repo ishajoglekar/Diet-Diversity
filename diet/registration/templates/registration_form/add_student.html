@@ -1,0 +1,78 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags%}
+
+{%block links %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/consent.css' %}">
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+{% endblock %}
+    
+{% block title %}
+    <title>Consent Form</title>
+{% endblock %}
+
+
+        
+{%block content%}
+<div class="card">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="consent-card">
+                <form action="" method="POST">
+                    {{form.media}}
+
+                    {% csrf_token %}
+                    <h2>Students Information</h2>
+                    <br>
+                    <div class="col-md-12">
+                        {{ form.name|as_crispy_field }}
+                    </div>
+                    <br>
+
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.school|as_crispy_field }} </div>
+
+                            <div class="col-md-6">
+                                {{ form.rollno|as_crispy_field }}
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="col-md-12">
+                            <div class="row">
+
+
+                                <div class="col-md-6">
+                                    {{ form.dob|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.gender|as_crispy_field }}
+                                </div>
+
+                                <div class="col-md-12">
+                                    {{form.address|as_crispy_field}}
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+
+                        <br> {{user_creation_form|crispy}}
+                        <div class="d-flex justify-content-around">
+    
+                            <input type="submit" class="btn btn-warning " value="Submit">
+                        </div>
+
+                </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {% endblock %}

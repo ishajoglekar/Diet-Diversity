@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import HttpResponse
@@ -13,7 +14,7 @@ import openpyxl
 import string
 import random
 import datetime
-
+from django.contrib.auth import logout
 
 from registration.models import *
 from .forms import ConsentForm,ParentsInfoForm, StudentsInfoForm
@@ -79,7 +80,7 @@ def students_info(request):
             parentUser.save()
             parent = parentform.save(commit=False)   
             parent.user = parentUser
-            # print(request.session.get('data'))
+            print(request.session.get('data'))
             # print(parent.name)
             # print(type(parent.name))
             parent.name = encryptionHelper.encrypt(previousPOST['name'])
@@ -87,8 +88,6 @@ def students_info(request):
             parent.email = encryptionHelper.encrypt(previousPOST['email'])
             print(encryptionHelper.decrypt(parent.email))
             parent.save()
-
-
             studentuser = studentuserform.save(commit=False)
             studentuser.save()   
             student = form.save(commit=False)
@@ -97,6 +96,11 @@ def students_info(request):
             print(encryptionHelper.decrypt(student.name))
             student.parent = parent
             student.save()
+            user = authenticate(request, username=previousPOST['username'], password=previousPOST['password1'])
+            if user is not None:
+                login(request, user)
+
+            del request.session['data']
             
             return redirect('/home')
         else:            
@@ -337,9 +341,50 @@ def downloadData(request):
     wb.save(response)
     return response
 
+def dashboard(request):
+    if request.method == "GET":
+        if request.user.is_authenticated:
+            students = ParentsInfo.objects.filter(user= request.user).first().studentsinfo_set.all()
+            helper = EncryptionHelper()
+            for student in students:
+                print(helper.decrypt(student.name))
+                student.name = helper.decrypt(student.name)
+            return render(request,'registration_form/dashboard.html',{'students':students})
+        else:
+            form = AuthenticationForm()
+            return render(request,'registration_form/parent_login.html',{'form':form})
 
+
+
+def logoutU(request):
+    logout(request)
+    return redirect('/parent_login')
                 
-      
+def addStudentForm(request):
+    if request.method == "GET":
+        form = StudentsInfoForm()
+        user_creation_form = UserCreationForm() 
+        return render(request,'registration_form/add_student.html',{'form':form,'user_creation_form':user_creation_form})
+    else:
+        form = StudentsInfoForm(request.POST)
+        studentuserform =  UserCreationForm(request.POST)
+        if form.is_valid() and studentuserform.is_valid():                        
+            encryptionHelper = EncryptionHelper()
+            studentuser = studentuserform.save(commit=False)
+            studentuser.save()   
+            student = form.save(commit=False)
+            student.user = studentuser
+            student.name = encryptionHelper.encrypt(request.POST['name'])
+            print(encryptionHelper.decrypt(student.name))
+            student.parent = ParentsInfo.objects.filter(user= request.user).first()
+            student.save()
+            return redirect('/dashboard')
+        else:            
+            print(form.errors.as_data())
+            return render(request,'registration_form/addStudent.html',{'form':form,'user_creation_form':studentuserform})
+
+
+
 
 # def getExcel(request):
 #     response = HttpResponse(content_type='application/ms-excel')
