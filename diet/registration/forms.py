@@ -1,8 +1,11 @@
-from django.forms import ModelForm
+from django.contrib.auth.models import Group
+from django.forms import ModelForm, fields
 from django import forms
-from .models import ParentsInfo, StudentsInfo
+from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
+
+from .models import ParentsInfo, StudentsInfo
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
@@ -76,3 +79,11 @@ class StudentsInfoForm(ModelForm):
             self.add_error('name','Name is a required Field')
         
         return self.cleaned_data
+
+
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    groups = forms.ModelChoiceField(queryset=Group.objects.all())
+    class Meta:
+        fields = '__all__'
