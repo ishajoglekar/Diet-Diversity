@@ -16,6 +16,7 @@ urlpatterns = [
     path('downloadData/',views.downloadData),
     path('parent_dashboard/',views.dashboard),
     path('student_dashboard/',views.student_dashboard),
+    path('teacher_dashboard/',views.teacher_dashboard),
     path('logout/',views.logoutU),
     path('addStudentForm/',views.addStudentForm),
     path('firstModule/',views.getFirstModule),

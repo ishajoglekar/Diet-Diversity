@@ -1,19 +1,18 @@
 import io
 from django.contrib.auth.models import Group
+from django.http.response import HttpResponseForbidden
 import openpyxl
 import string
 import random
 import xlsxwriter
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from django.http import HttpResponse, request
-from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login,authenticate
-from cryptography.fernet import Fernet
-from openpyxl.descriptors.base import DateTime
 from datetime import datetime
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 
 
 from registration.models import *
@@ -21,6 +20,8 @@ from .forms import ConsentForm,ParentsInfoForm, StudentsInfoForm,CustomAuthentic
 from shared.encryption import EncryptionHelper
 
 
+def is_teacher(user):
+    return user.groups.filter(name='Teachers').exists()
 
 def home(request):
     return render(request, "registration_form/home.html")
@@ -124,6 +125,8 @@ def loginU(request):
                     return redirect('/parent_dashboard')
                 elif grp_name == 'Students':
                     return redirect('/student_dashboard')
+                elif grp_name == 'Teachers':
+                    return redirect('/teacher_dashboard')
             else:
                 messages.error(request, 'User does not belong to select group')
                 return render(request,'registration_form/login.html',{'form':form})
@@ -179,6 +182,7 @@ def addStudentForm(request):
 
 
 @login_required(login_url='/login')
+@user_passes_test(is_teacher)
 def bulkRegister(request):
     if(request.method=="GET"):
         return render(request,'registration/bulkregistration.html')
@@ -534,9 +538,13 @@ def nutriPartTwo(request):
 def student_dashboard(request):
     return render(request,'registration_form/student_dashboard.html')
 
+def teacher_dashboard(request):
+    return render(request,'registration_form/teacher_dashboard.html')
+
+
 
 #user to check if a user belongs to a group
 def is_member(user,grp):
     grp = Group.objects.get(pk=grp)
-    print(user.groups.filter(name=grp).exists())
     return user.groups.filter(name=grp).exists()
+
