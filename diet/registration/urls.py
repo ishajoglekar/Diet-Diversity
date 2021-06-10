@@ -18,5 +18,7 @@ urlpatterns = [
     path('student_dashboard/',views.student_dashboard),
     path('logout/',views.logoutU),
     path('addStudentForm/',views.addStudentForm),
-    # path('addStudent/',views.addStudent),
+    path('firstModule/',views.getFirstModule),
+    path('nutri/',views.nutri),
+    path('nutriPartTwo/',views.nutriPartTwo),
 ]  
