@@ -1,8 +1,12 @@
-from django.forms import ModelForm
+from django.contrib.auth.models import Group
+from django.forms import ModelForm, fields
 from django import forms
 from .models import ParentsInfo, StudentsInfo, FirstModule
+from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
+
+from .models import ParentsInfo, StudentsInfo
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
@@ -116,3 +120,10 @@ class FirstModuleForm(ModelForm):
 
     drinks = forms.MultipleChoiceField(choices=DRINKS_INTAKE, widget= forms.CheckboxSelectMultiple(attrs={'class':'flex-item'}))
 
+
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    groups = forms.ModelChoiceField(queryset=Group.objects.all())
+    class Meta:
+        fields = '__all__'

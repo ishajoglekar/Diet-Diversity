@@ -1,39 +1,24 @@
 import io
+from django.contrib.auth.models import Group
+import openpyxl
+import string
+import random
+import xlsxwriter
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import HttpResponse, request
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login,authenticate
-from django.core import serializers
-import environ
 from cryptography.fernet import Fernet
-import json
 from openpyxl.descriptors.base import DateTime
-import xlwt
-import openpyxl
-import string
-import random
 from datetime import datetime
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-import xlsxwriter
 
 
 from registration.models import *
-from .forms import ConsentForm, FirstModuleForm,ParentsInfoForm, StudentsInfoForm
+from .forms import ConsentForm,ParentsInfoForm, StudentsInfoForm,CustomAuthenticationForm,FirstModuleForm
 from shared.encryption import EncryptionHelper
-
-# env = environ.Env()
-# environ.Env.read_env()
-# key: bytes = bytes(env('KEY'),'ascii')
-# f = Fernet(key)
-
-# error_messages = dict()
-
-# def encrypt(data):
-#     stringBytes = bytes(data,'UTF-8')
-#     encr = f.encrypt(stringBytes)
-#     return encr
 
 
 
@@ -81,6 +66,10 @@ def students_info(request):
             encryptionHelper = EncryptionHelper()
             parentUser = parentuserform.save(commit=False)
             parentUser.save()
+            parent_group = Group.objects.get(name='Parents')
+            parentUser.groups.add(parent_group)
+            parentUser.save()
+
             parent = parentform.save(commit=False)   
             parent.user = parentUser
             parent.first_password = ''
@@ -88,8 +77,13 @@ def students_info(request):
             parent.name = encryptionHelper.encrypt(previousPOST['name'])
             parent.email = encryptionHelper.encrypt(previousPOST['email'])
             parent.save()
+
             studentuser = studentuserform.save(commit=False)
-            studentuser.save()   
+            studentuser.save()
+            student_group = Group.objects.get(name='Students')
+            studentuser.groups.add(student_group)
+            studentuser.save()
+
             student = form.save(commit=False)
             student.user = studentuser            
             student.first_password = ''
@@ -97,6 +91,8 @@ def students_info(request):
             student.name = encryptionHelper.encrypt(request.POST['name'])
             student.parent = parent
             student.save()
+
+
             user = authenticate(request, username=previousPOST['username'], password=previousPOST['password1'])
             if user is not None:
                 login(request, user)
@@ -109,23 +105,33 @@ def students_info(request):
             return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':studentuserform})
 
 
-def parent_login(request):
+def loginU(request):
     if request.method == "GET":
-        form = AuthenticationForm()
-        return render(request,'registration_form/parent_login.html',{'form':form})
+        form = CustomAuthenticationForm()
+        return render(request,'registration_form/login.html',{'form':form})
     else:
         username = request.POST['username']
         password = request.POST['password']
+        grp = request.POST['groups']
         user = authenticate(request, username=username, password=password)
-        form = AuthenticationForm(request.POST)
+        grp_name = Group.objects.get(pk=grp).name
+        form = CustomAuthenticationForm(request.POST)
         if user is not None:
-            login(request,user)
-            return redirect('/dashboard')
+            if is_member(user,grp):
+                login(request,user)
+                print(grp_name)
+                if grp_name == 'Parents':
+                    return redirect('/parent_dashboard')
+                elif grp_name == 'Students':
+                    return redirect('/student_dashboard')
+            else:
+                messages.error(request, 'User does not belong to select group')
+                return render(request,'registration_form/login.html',{'form':form})
         else:
             messages.error(request, 'Invalid credentials')
-            return render(request,'registration_form/parent_login.html',{'form':form})
+            return render(request,'registration_form/login.html',{'form':form})
 
-@login_required(login_url='/parent_login')
+@login_required(login_url='/login')
 def dashboard(request):
     if request.method == "GET":
         students = ParentsInfo.objects.filter(user= request.user).first().studentsinfo_set.all()
@@ -136,12 +142,12 @@ def dashboard(request):
         return render(request,'registration_form/dashboard.html',{'students':students})
 
 
-@login_required(login_url='/parent_login')
+@login_required(login_url='/login')
 def logoutU(request):
     logout(request)
-    return redirect('/parent_login')
+    return redirect('/login')
 
-@login_required(login_url='/parent_login')             
+@login_required(login_url='/login')             
 def addStudentForm(request):
     if request.method == "GET":
         form = StudentsInfoForm()
@@ -154,6 +160,10 @@ def addStudentForm(request):
             encryptionHelper = EncryptionHelper()
             studentuser = studentuserform.save(commit=False)
             studentuser.save()   
+            student_group = Group.objects.get(name='Students')
+            studentuser.groups.add(student_group)
+            studentuser.save()
+
             student = form.save(commit=False)
             student.user = studentuser
             student.first_password = ''
@@ -162,13 +172,13 @@ def addStudentForm(request):
             print(encryptionHelper.decrypt(student.name))
             student.parent = ParentsInfo.objects.filter(user= request.user).first()
             student.save()
-            return redirect('/dashboard')
+            return redirect('/parent_dashboard')
         else:            
             print(form.errors.as_data())
-            return render(request,'registration_form/addStudent.html',{'form':form,'user_creation_form':studentuserform})
+            return render(request,'registration_form/add_student.html',{'form':form,'user_creation_form':studentuserform})
 
 
-@login_required(login_url='/parent_login')
+@login_required(login_url='/login')
 def bulkRegister(request):
     if(request.method=="GET"):
         return render(request,'registration/bulkregistration.html')
@@ -268,6 +278,9 @@ def bulkRegister(request):
                 parentUser = User(username=row[2])
                 parentUser.set_password(password)
                 parentUser.save()
+                parent_group = Group.objects.get(name='Parents')
+                parentUser.groups.add(parent_group)
+                parentUser.save()
 
                 #getting data from db for foreign keys
                 city = City.objects.filter(city=row[9].lower()).first()
@@ -294,6 +307,9 @@ def bulkRegister(request):
                 studentUser = User(username=row[1])
                 studentUser.set_password(password)
                 studentUser.save()
+                student_group = Group.objects.get(name='Students')
+                studentUser.groups.add(student_group)
+                studentUser.save()
 
                 #getting data from db for foreign keys                
                 parentData = ParentsInfo.objects.all()
@@ -312,7 +328,7 @@ def bulkRegister(request):
         return redirect('/bulkRegister')
 
 
-@login_required(login_url='/parent_login')
+@login_required(login_url='/login')
 def getTemplate(request):
     output = io.BytesIO()
     
@@ -351,7 +367,7 @@ def getTemplate(request):
 
     return response  
 
-@login_required(login_url='/parent_login')
+@login_required(login_url='/login')
 def downloadData(request):
 
     output = io.BytesIO()
@@ -511,3 +527,13 @@ def nutriPartTwo(request):
     else:
         # print(request.POST.getlist('drinks'))
         print(','.join(request.POST.getlist('drinks')))
+
+def student_dashboard(request):
+    return render(request,'registration_form/student_dashboard.html')
+
+
+#user to check if a user belongs to a group
+def is_member(user,grp):
+    grp = Group.objects.get(pk=grp)
+    print(user.groups.filter(name=grp).exists())
+    return user.groups.filter(name=grp).exists()
