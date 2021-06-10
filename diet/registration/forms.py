@@ -59,8 +59,7 @@ class StudentsInfoForm(ModelForm):
     
     address= forms.CharField(max_length=255,widget= forms.Textarea())
     dt = datetime.datetime.now()
-    dt = dt.replace(year=dt.year-5) 
-    print(dt.strftime("%m/%d/%Y"))
+    dt = dt.replace(year=dt.year-5)     
     widgets = {
             'start_date': DatePickerInput(), # python date-time format
             'end_date': dt.strftime("%m/%d/%Y"),

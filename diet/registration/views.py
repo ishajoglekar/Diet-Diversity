@@ -320,8 +320,11 @@ def bulkRegister(request):
                 print(parent)                    
                 school = School.objects.filter(name=row[6].lower()).first()
 
+                olddob = datetime.strptime(row[5],'%d/%m/%Y')
+                newdob = olddob.strftime('%Y-%m-%d')
+                teacher = TeacherInCharge.objects.get(pk=1)
                 #creating student
-                student = StudentsInfo(name=row[0],address=row[2],rollno=row[3],gender=row[4],dob=datetime.strptime(row[5],'%d-%m-%Y').date(),school=school,first_password=password)
+                student = StudentsInfo(name=row[0],address=row[2],rollno=row[3],gender=row[4],dob=newdob,school=school,first_password=password,teacher=teacher)
                 student.parent = parent
                 student.user = studentUser
                 student.save()    
