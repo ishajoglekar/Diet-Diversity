@@ -1,7 +1,7 @@
 import io
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, request
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login,authenticate
 from django.core import serializers
@@ -20,7 +20,7 @@ import xlsxwriter
 
 
 from registration.models import *
-from .forms import ConsentForm,ParentsInfoForm, StudentsInfoForm
+from .forms import ConsentForm, FirstModuleForm,ParentsInfoForm, StudentsInfoForm
 from shared.encryption import EncryptionHelper
 
 # env = environ.Env()
@@ -491,3 +491,23 @@ def test(request):
     obj = StudentsInfo.objects.filter(parent=parent).values()
     print(obj)
 
+def getFirstModule(request):
+    if(request.method == "GET"):
+        form = FirstModuleForm()
+        return render(request,'registration_form/first_module.html',{'form':form})
+    else:
+        request.session['data'] = request.POST
+        return redirect('/nutriPartTwo')
+
+
+def nutri(request):
+    # return render(request,'registration/nutri-infotainment.html')
+    return redirect('nutriPartTwo')
+
+def nutriPartTwo(request):
+    if(request.method == "GET"):
+        form = FirstModuleForm()
+        return render(request,'registration_form/first_module_second.html',{'form':form})
+    else:
+        # print(request.POST.getlist('drinks'))
+        print(','.join(request.POST.getlist('drinks')))

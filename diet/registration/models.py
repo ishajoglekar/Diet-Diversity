@@ -129,3 +129,13 @@ class StudentsInfo(models.Model):
     def __str__(self):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.name)
+
+
+class FirstModule(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)  
+    tennis = models.CharField(max_length=255)
+    cricket = models.CharField(max_length=255)
+    chess = models.CharField(max_length=255)
+    food = models.CharField(max_length=255)
+    drinks = models.CharField(max_length=255)

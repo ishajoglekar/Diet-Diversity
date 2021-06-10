@@ -1,0 +1,79 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags%}
+
+{%block links %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'css/consent.css' %}">
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+{% endblock %}
+
+{% block title %}
+<title>Consent Form</title>
+{% endblock %}
+
+
+{% block content %}
+<style>
+   li{
+       display:inline-block;
+   }
+</style>
+<h2 class="fs-title">Radio</h2>
+<form action="" method="POST">
+    {% csrf_token %}
+    {{form.email}}
+    <h3 class="fs-subtitle">What is your nuts intake?</h3>
+    <div class="grid-header">
+        <div class="header-item"></div>
+        <div class="header-item">1-5</div>
+        <div class="header-item">6-10</div>
+        <div class="header-item">10-15</div>
+        <div class="header-item">>15</div>
+        <div class="header-item">1 teaspoon</div>
+        <div class="header-item">1 tablespoon</div>
+        <div class="header-item">Never</div>
+    </div>
+
+    <div class="grid-row">
+        <div class="flex-item">Food</div>
+        {% for radio in form.food %}
+            <label class="flex-item">
+                {{ radio.tag }}
+                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+            </label>
+        {% endfor %}
+        
+    </div>
+
+
+    <h3 class="fs-subtitle">Which drinks do you like the most?</h3>
+    <div class="grid-header">
+        <div class="header-item"></div>
+        <div class="header-item">Water</div>
+        <div class="header-item">Soft Drinks</div>
+        <div class="header-item">Fruit Juices</div>
+        <div class="header-item">Energy Drinks</div>
+        <div class="header-item">No Drinks</div>
+    </div>
+
+    <div class="grid-row">
+        <div class="flex-item">Drinks</div>
+        {% for radio in form.drinks %}
+            <label class="flex-item">
+                {{ radio.tag }}
+                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+            </label>
+        {% endfor %}
+        
+    </div>
+
+    <input type="submit">
+</form>
+
+{% endblock %}
