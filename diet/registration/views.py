@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login,authenticate
-from datetime import datetime
+from datetime import datetime,date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required,user_passes_test
 
@@ -239,13 +239,15 @@ def bulkRegister(request):
 
         student_data = list()
         # iterating over the rows and
-        # getting value from each cell in row        
+        # getting value from each cell in row  
+        print(studentSheet.max_row)              
         for row in studentSheet.iter_rows():
             row_data = list()
             for cell in row:                                
                 if cell.row == 1 :                
                     continue
                 if cell.column_letter == 'A':
+                    print(cell.value)
                     row_data.append(encryptionHelper.encrypt(str(cell.value)))
                     row_data.append(str(cell.value.lower().replace(" ",""))+str(random.randint(11,99)))
                 elif cell.column_letter == 'B':
@@ -270,14 +272,12 @@ def bulkRegister(request):
             skipparent = False
             parentData = ParentsInfo.objects.all()
             for parent in parentData:                
-                print(encryptionHelper.decrypt(parent.email))
                 if encryptionHelper.decrypt(parent.email) == encryptionHelper.decrypt(row[0]):
                     skipparent = True
                     break
-                            
-            print(skipparent)
-            if not skipparent:
-                print("Inside Parent")               
+
+            print(skipparent)       
+            if not skipparent:              
                 password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 8))                      
                 parentUser = User(username=row[2])
                 parentUser.set_password(password)
@@ -303,10 +303,9 @@ def bulkRegister(request):
             if index == 0:
                 continue  
             #creating student user
-            skipstudent = StudentsInfo.objects.filter(rollno = row[3]).first()
-            print(skipstudent)
-            if not skipstudent: 
-                print("Inside Student")               
+            skipstudent = StudentsInfo.objects.filter(rollno = row[3]).first()  
+            print(skipstudent)       
+            if not skipstudent:               
                 password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 8))
                 studentUser = User(username=row[1])
                 studentUser.set_password(password)
@@ -320,15 +319,12 @@ def bulkRegister(request):
                 for tempparent in parentData:
                     if encryptionHelper.decrypt(tempparent.email) == row[7]:
                         parent = tempparent
-
-                print(parent)                    
-                school = School.objects.filter(name=row[6].lower()).first()
-
-                olddob = datetime.strptime(row[5],'%d/%m/%Y')
-                newdob = olddob.strftime('%Y-%m-%d')
-                teacher = TeacherInCharge.objects.get(pk=1)
-                #creating student
-                student = StudentsInfo(name=row[0],address=row[2],rollno=row[3],gender=row[4],dob=newdob,school=school,first_password=password,teacher=teacher)
+                  
+                school = School.objects.filter(name=row[6].lower()).first()                
+                teacher = TeacherInCharge.objects.filter(user = request.user).first()
+                #creating student                 
+                dob = datetime.strptime(row[5],'%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+                student = StudentsInfo(name=row[0],address=row[2],rollno=row[3],gender=row[4],dob=dob,school=school,first_password=password,teacher=teacher)
                 student.parent = parent
                 student.user = studentUser
                 student.save()    
@@ -349,7 +345,7 @@ def getTemplate(request):
     sampleParentData =["john@gmail.com","John Doe","Male","29","Mumbai","400001","5","2","Mumbai","Maharashtra","BTech","Engineer","Hindu","Nuclear"]
 
 
-    sampleStudentData =["Jane Doe","Mumbai","1234","Female","20/8/2012","K.J Somaiya School","john@gmail.com"]
+    sampleStudentData =["Jane Doe","Mumbai","1234","Female",date.today().strftime("%d/%m/%Y"),"K.J Somaiya School","john@gmail.com"]
     row_num = 0    
 
     
@@ -382,97 +378,25 @@ def downloadData(request):
     wb =  xlsxwriter.Workbook(output)
     parentSheet = wb.add_worksheet("Parents Data")
     studentSheet = wb.add_worksheet("Students Data")
-
-
-    # Sheet header, first row
-    row_num = 0
-
     encryptionHelper = EncryptionHelper()
-
-
-    # #parent sheet
-    parentColumns = ['Name','Email','Age','Gender','Address','City','State','Pincode','Education','Occupation','Religion','Family count','Children count','Family Type','Username','Password']
-
-
-    for col_num in range(len(parentColumns)):
-        parentSheet.write(row_num, col_num, parentColumns[col_num]) # at 0 row 0 column 
-
-    rows = ParentsInfo.objects.all().values_list('name','email','age','gender','address','city','state','pincode','edu','occupation','religion','no_of_family_members','children_count','type_of_family','user','first_password','password_changed')
-
-    for row in rows:        
-        row_num += 1
-        for col_num in range(len(parentColumns)):            
-            if(col_num==0):  
-                print(encryptionHelper.decrypt(row[col_num]))              
-                parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]))
-            
-            elif(col_num==1):
-                print(encryptionHelper.decrypt(row[col_num]))              
-                parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]))
-
-            elif(col_num==5):
-                city = City.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, city.city)
-
-            elif(col_num==6):
-                state = State.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, state.state)
-
-            elif(col_num==8):
-                education = Education.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, education.education)
-
-            elif(col_num==9):
-                occupation = Occupation.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, occupation.occupation)
-
-            elif(col_num==10):
-                religion = ReligiousBelief.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, religion.religion)
-
-            elif(col_num==13):
-                familyType = FamilyType.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, familyType.family)
-
-            elif(col_num==14):
-                user = User.objects.get(pk=row[col_num])
-                parentSheet.write(row_num, col_num, user.username)
-
-            elif(col_num==15):
-                msg = row[col_num]
-                if row[col_num+1]:
-                    msg = "Already Changed"
-                parentSheet.write(row_num, col_num, msg)
-
-            elif col_num==16:
-                continue
-
-            else:
-                print(row[col_num])
-                parentSheet.write(row_num, col_num, row[col_num])
-
-
 
     #student sheet
     row_num = 0
-
     studentColumns = ['Name','Roll No','DOB','Gender','Address','School','Parent\'s Email','Username', 'Password']
-
     for col_num in range(len(studentColumns)):
         studentSheet.write(row_num, col_num, studentColumns[col_num]) # at 0 row 0 column 
 
-    
-    rows = StudentsInfo.objects.all().values_list('name','rollno','dob','gender','address','school','parent','user','first_password','password_changed')    
-
+    teacher = TeacherInCharge.objects.filter(user = request.user).first()
+    rows = StudentsInfo.objects.filter(teacher=teacher).values_list('name','rollno','dob','gender','address','school','parent','user','first_password','password_changed')    
+    parentEmail = []
+    print("Students")
     for row in rows:        
         row_num += 1
         for col_num in range(len(studentColumns)):            
-            if(col_num==0):  
-                print(encryptionHelper.decrypt(row[col_num]))              
+            if(col_num==0):                                               
                 studentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]))
             
             elif(col_num==2):
-                print(row[col_num].strftime('%d/%b/%Y'))
                 studentSheet.write(row_num, col_num, row[col_num].strftime('%d/%b/%Y'))
 
             elif(col_num==5):
@@ -481,11 +405,13 @@ def downloadData(request):
 
             elif(col_num==6):
                 parent = ParentsInfo.objects.get(pk=row[col_num])
-                studentSheet.write(row_num, col_num, encryptionHelper.decrypt(parent.email))
+                email = encryptionHelper.decrypt(parent.email)
+                if email not in parentEmail:
+                    parentEmail.append(email)
+                studentSheet.write(row_num, col_num, email)
 
             elif(col_num==7):
                 user = User.objects.get(pk=row[col_num])
-                print(user.username)
                 studentSheet.write(row_num, col_num, user.username)
 
             elif(col_num==8):
@@ -498,8 +424,73 @@ def downloadData(request):
                 continue
 
             else:
-                print(row[col_num])
                 studentSheet.write(row_num, col_num, row[col_num])
+
+    
+    # Sheet header, first row
+    row_num = 0
+    
+    #parent sheet
+    parentColumns = ['Name','Email','Age','Gender','Address','City','State','Pincode','Education','Occupation','Religion','Family count','Children count','Family Type','Username','Password']
+    for col_num in range(len(parentColumns)):
+        parentSheet.write(row_num, col_num, parentColumns[col_num]) # at 0 row 0 column 
+
+    rows = ParentsInfo.objects.all().values_list('name','email','age','gender','address','city','state','pincode','edu','occupation','religion','no_of_family_members','children_count','type_of_family','user','first_password','password_changed')
+    print("Parents")
+    for row in rows:            
+        print(parentEmail)
+        print(encryptionHelper.decrypt(row[1]))
+        print(encryptionHelper.decrypt(row[1]) in parentEmail)
+        if encryptionHelper.decrypt(row[1]) in parentEmail:
+            row_num += 1
+            for col_num in range(len(parentColumns)):   
+                               
+                if(col_num==0):              
+                    parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]))
+                
+                elif(col_num==1):             
+                    parentSheet.write(row_num, col_num, encryptionHelper.decrypt(row[col_num]))
+
+                elif(col_num==5):
+                    city = City.objects.get(pk=row[col_num])
+                    parentSheet.write(row_num, col_num, city.city)
+
+                elif(col_num==6):
+                    state = State.objects.get(pk=row[col_num])
+                    parentSheet.write(row_num, col_num, state.state)
+
+                elif(col_num==8):
+                    education = Education.objects.get(pk=row[col_num])
+                    parentSheet.write(row_num, col_num, education.education)
+
+                elif(col_num==9):
+                    occupation = Occupation.objects.get(pk=row[col_num])
+                    parentSheet.write(row_num, col_num, occupation.occupation)
+
+                elif(col_num==10):
+                    religion = ReligiousBelief.objects.get(pk=row[col_num])
+                    parentSheet.write(row_num, col_num, religion.religion)
+
+                elif(col_num==13):
+                    familyType = FamilyType.objects.get(pk=row[col_num])
+                    parentSheet.write(row_num, col_num, familyType.family)
+
+                elif(col_num==14):
+                    user = User.objects.get(pk=row[col_num])
+                    parentSheet.write(row_num, col_num, user.username)
+
+                elif(col_num==15):
+                    msg = row[col_num]
+                    if row[col_num+1]:
+                        msg = "Already Changed"
+                    parentSheet.write(row_num, col_num, msg)
+
+                elif col_num==16:
+                    continue
+
+                else:
+                    parentSheet.write(row_num, col_num, row[col_num])
+
     
     wb.close()
     # construct response
@@ -508,11 +499,6 @@ def downloadData(request):
     response['Content-Disposition'] = "attachment; filename=Parent and Student list.xlsx"
     return response
 
-
-def test(request):
-    parent = ParentsInfo.objects.filter(user = request.user).first()    
-    obj = StudentsInfo.objects.filter(parent=parent).values()
-    print(obj)
 
 def getFirstModule(request):
     if(request.method == "GET"):

@@ -108,7 +108,7 @@ class ParentsInfo(models.Model):
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    school = models.OneToOneField(School,on_delete=models.CASCADE)
+    school = models.ForeignKey(School,on_delete=models.CASCADE)
     
     def __str__(self):
         return self.name
