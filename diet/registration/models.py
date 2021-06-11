@@ -143,7 +143,7 @@ class FirstModule(models.Model):
 class ModuleOne(models.Model):
     student = models.ForeignKey(StudentsInfo,on_delete=models.CASCADE)
     draft = models.BooleanField()
-    nutriGarden = models.BooleanField(null=True)
+    nutriGarden = models.CharField(max_length=10,null=True)
     source_fruits_vegetables = models.CharField(max_length=255,null=True)
     grow_own_food = models.CharField(max_length=255,null=True)
     if_grow_what = models.CharField(max_length=255,null=True,default="NA")

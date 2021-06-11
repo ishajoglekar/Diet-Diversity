@@ -59,6 +59,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.grow_own_food.errors %}
+                                <div class="alert alert-danger">{{form.grow_own_food.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -71,8 +74,8 @@
 
 
                         <div class="col-md-12 mb-3 form-group">
-                            <p class="fw-bold mb-0">5. {{form.reason_gardenening.label_tag}}</p>
-                            {% for radio in form.reason_gardenening %}
+                            <p class="fw-bold mb-0">5. {{form.reason_gardening.label_tag}}</p>
+                            {% for radio in form.reason_gardening %}
                                <div>
                                 {{ radio.tag }}
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
@@ -103,7 +106,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <a href="/draft" class="btn btn-warning">Save Draft</a>
+                                <input type="submit" class="btn btn-warning" value="Save draft" formaction="/draft/">
                             </div>
                             <div class="col-md-6 d-flex justify-content-end">
                                 <input type="submit" class="btn btn-success" value="Next">

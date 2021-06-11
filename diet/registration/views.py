@@ -1,5 +1,6 @@
 import io
 from django.contrib.auth.models import Group
+from django.db.models.expressions import F
 from django.http.response import HttpResponseForbidden
 import openpyxl
 import string
@@ -539,8 +540,13 @@ def is_member(user,grp):
 
 def moduleOne(request):
     if(request.method=="GET"):
+        
         if(request.session.get('moduleOne1')):
             form = ModuleOneForm(request.session.get('moduleOne1'))
+        elif ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+            if draftForm.draft:
+                form = ModuleOneForm(instance=draftForm)
         else:
             form = ModuleOneForm()
 
@@ -558,8 +564,34 @@ def moduleOne(request):
 def draft(request):
     module = request.META.get('HTTP_REFERER').split('/')[-2]
     print(module=="moduleOne")
-    # if module=="moduleOne":
-    #     form = 
+    if module=="moduleOne":
+        #for removinf csrf field
+        temp = {}
+        for key,value in request.POST.items():
+            temp[key] = value
+        del temp['csrfmiddlewaretoken']
+        print(temp)
+
+        #checking of draft exists
+        if  ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+            if draftForm.draft:
+            # updating drafts
+                for name in ModuleOne._meta.get_fields():
+                    name = name.column
+                    if name == 'id' or name == 'student_id' or name == 'draft':
+                            continue
+                    if name in temp:
+                        setattr(draftForm, name, temp[name])      
+                    else:
+                        setattr(draftForm, name, None) 
+                draftForm.save()
+        else:
+            #creating new record
+            form = ModuleOne(**temp)
+            form.student = StudentsInfo.objects.get(user=request.user)
+            form.draft = True
+            form.save()
     return redirect(request.META.get('HTTP_REFERER'))
 
 

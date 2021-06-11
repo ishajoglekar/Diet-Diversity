@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from django.db.models.fields import CharField
 from django.forms import ModelForm, fields
 from django import forms
@@ -130,7 +131,7 @@ class CustomAuthenticationForm(AuthenticationForm):
 class ModuleOneForm(forms.ModelForm):
     class Meta:
         model = ModuleOne
-        fields = ['nutriGarden', 'source_fruits_vegetables', 'grow_own_food', 'if_grow_what', 'reason_gardenening', 'healthy_diet', 'imp_nutrients']
+        fields = ['student','draft','nutriGarden', 'source_fruits_vegetables', 'grow_own_food', 'if_grow_what', 'reason_gardening', 'healthy_diet', 'imp_nutrients']
         
     if_grow_what = forms.CharField(label=("If you grow your own food, what do you grow? ( if you don't grow your own food,please specify N/A)"),max_length=255,required=False)
     FOOD_INTAKES=[('1-5',''),
@@ -141,7 +142,7 @@ class ModuleOneForm(forms.ModelForm):
          ('1 tablespoon',''),
          ('Never','')]
          
-    YES_NO=[(True,'Yes'),(False,'No')]
+    YES_NO=[('Yes','Yes'),('No','No')]
 
     source_fruits_vegetables_choices = [
         ('Vendor on the cart','Vendor on the cart'),
@@ -187,11 +188,16 @@ class ModuleOneForm(forms.ModelForm):
     
     nutriGarden = forms.ChoiceField(label = ("Do you know what is a Nutri-garden?"),choices=YES_NO,widget=forms.RadioSelect(),required=False)
     source_fruits_vegetables = forms.MultipleChoiceField(label = ("Where do you buy your fruits and vegetables from?"),choices=source_fruits_vegetables_choices,widget=forms.CheckboxSelectMultiple,required=False)
-    grow_own_food = forms.MultipleChoiceField(label = ("Do you grow your own food?"),choices=grow_own_food_choices,widget=forms.CheckboxSelectMultiple)
-    reason_gardenening = forms.ChoiceField(label = ("What is your reason for gardening?"),choices=reason_gardening_choices,widget=forms.RadioSelect())
-    healthy_diet = forms.ChoiceField(label = ("Select a Healthy Diet."),choices=healthy_diet_choices,widget=forms.RadioSelect())
-    imp_nutrients = forms.ChoiceField(label = ("Which of the following nutrients is important for body, cell, and muscle growth and repair?"),choices=imp_nutrients_choices,widget=forms.RadioSelect())
+    grow_own_food = forms.MultipleChoiceField(label = ("Do you grow your own food?"),choices=grow_own_food_choices,widget=forms.CheckboxSelectMultiple,required=False)
+    reason_gardening = forms.ChoiceField(label = ("What is your reason for gardening?"),choices=reason_gardening_choices,widget=forms.RadioSelect(),required=False)
+    healthy_diet = forms.ChoiceField(label = ("Select a Healthy Diet."),choices=healthy_diet_choices,widget=forms.RadioSelect(),required=False)
+    imp_nutrients = forms.ChoiceField(label = ("Which of the following nutrients is important for body, cell, and muscle growth and repair?"),choices=imp_nutrients_choices,widget=forms.RadioSelect(),required=False)
     
+
+    # def clean(self):
+    #     if not self.cleaned_data['grow_own_food']:
+    #         self.add_error('grow_own_food','REQUEIRED')
+    #     return self.cleaned_data
 
 
 
