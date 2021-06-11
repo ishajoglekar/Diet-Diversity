@@ -58,7 +58,7 @@ def students_info(request):
         user_creation_form = UserCreationForm() 
         return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':user_creation_form})
     else:        
-        previousPOST = request.session.get('data')
+        previousPOST = request.session['data']
         form = StudentsInfoForm(request.POST)
         studentuserform =  UserCreationForm(request.POST)
         parentform = ParentsInfoForm(previousPOST)
@@ -98,7 +98,7 @@ def students_info(request):
             if user is not None:
                 login(request, user)
 
-            print(request.session.get('data')) 
+            print(request.session['data']) 
             del request.session['data']
             return redirect('/home')
         else:            
@@ -522,6 +522,7 @@ def nutriPartTwo(request):
         print(','.join(request.POST.getlist('drinks')))
 
 def student_dashboard(request):
+
     return render(request,'registration_form/student_dashboard.html')
 
 def teacher_dashboard(request):

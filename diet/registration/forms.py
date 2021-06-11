@@ -17,7 +17,7 @@ class ConsentForm(forms.Form):
 class ParentsInfoForm(ModelForm):
     class Meta:
         model = ParentsInfo
-        fields = ['age','occupation','state','city','edu','pincode','no_of_family_members','type_of_family','religion','children_count']
+        fields = ['age','occupation','state','city','edu','pincode','no_of_family_members','type_of_family','religion','children_count','gender','address']
         labels = {
             'edu': 'Education',
         }
@@ -25,7 +25,7 @@ class ParentsInfoForm(ModelForm):
     email = forms.EmailField()
     name = forms.CharField()
     GENDER_CHOICES=[('Male','Male'),
-         ('Cricket','Female'),
+         ('Female','Female'),
          ('Other','Other')]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     
@@ -118,8 +118,6 @@ class FirstModuleForm(ModelForm):
          ('No Drinks',''),]
 
     drinks = forms.MultipleChoiceField(choices=DRINKS_INTAKE, widget= forms.CheckboxSelectMultiple(attrs={'class':'flex-item'}))
-
-
 
 
 class CustomAuthenticationForm(AuthenticationForm):
