@@ -25,5 +25,6 @@ urlpatterns = [
     path('moduleOne/',views.moduleOne),
     path('moduleOne-2/',views.moduleOne2),
     path('moduleOne-3/',views.moduleOne3),
+    path('draft/',views.draft),
 ]
   
