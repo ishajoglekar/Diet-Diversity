@@ -141,4 +141,32 @@ class FirstModule(models.Model):
     drinks = models.CharField(max_length=255)
 
 class ModuleOne(models.Model):
-    pass
+    student = models.ForeignKey(StudentsInfo,on_delete=models.CASCADE)
+    draft = models.BooleanField()
+    nutriGarden = models.BooleanField(null=True)
+    source_fruits_vegetables = models.CharField(max_length=255,null=True)
+    grow_own_food = models.CharField(max_length=255,null=True)
+    if_grow_what = models.CharField(max_length=255,null=True,default="NA")
+    reason_gardening = models.CharField(max_length=255,null=True)
+    healthy_diet = models.CharField(max_length=255,null=True)
+    imp_nutrients = models.CharField(max_length=255,null=True)
+    citrus_fruits_blank = models.CharField(max_length=255,null=True)
+    not_richsource_iron = models.CharField(max_length=255,null=True)
+    source_vitaminA = models.CharField(max_length=255,null=True)
+    imp_eat_fruits_vegetables = models.CharField(max_length=255,null=True)
+    reason_wide_variety_food = models.CharField(max_length=255,null=True)
+    microgreen = models.CharField(max_length=255,null=True)
+    microgreen_example = models.CharField(max_length=255,null=True)
+    harvestdays_microgreen = models.CharField(max_length=255,null=True)
+    microgreen_grow_seeds_kitchen = models.CharField(max_length=255,null=True)
+    microgreen_nutritiousthan_fullgrownvegetables = models.CharField(max_length=255,null=True)
+    microgreen_immunity = models.CharField(max_length=255,null=True)
+    microgreen_variety = models.CharField(max_length=255,null=True)
+    microgreen_source = models.CharField(max_length=255,null=True)
+    newspaper_grow_microgreen = models.CharField(max_length=255,null=True)
+    microgreen_first_step =  models.CharField(max_length=255,null=True)
+    soaking_time_seeds =  models.CharField(max_length=255,null=True)
+    microgreen_watering = models.CharField(max_length=255,null=True)
+    microgreen_use =  models.CharField(max_length=255,null=True)
+
+

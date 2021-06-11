@@ -22,4 +22,8 @@ urlpatterns = [
     path('firstModule/',views.getFirstModule),
     path('nutri/',views.nutri),
     path('nutriPartTwo/',views.nutriPartTwo),
-]  
+    path('moduleOne/',views.moduleOne),
+    path('moduleOne-2/',views.moduleOne2),
+    path('moduleOne-3/',views.moduleOne3),
+]
+  

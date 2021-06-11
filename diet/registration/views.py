@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 
 
 from registration.models import *
-from .forms import ConsentForm,ParentsInfoForm, StudentsInfoForm,CustomAuthenticationForm,FirstModuleForm
+from .forms import ConsentForm, ModuleOneForm,ModuleOneForm2,ModuleOneForm3,ParentsInfoForm, StudentsInfoForm,CustomAuthenticationForm,FirstModuleForm
 from shared.encryption import EncryptionHelper
 
 
@@ -535,3 +535,29 @@ def is_member(user,grp):
     grp = Group.objects.get(pk=grp)
     return user.groups.filter(name=grp).exists()
 
+# def test(request):
+#     str = "DSRV"
+#     school = School.objects.filter(name__icontains = str).first()
+#     print(school)
+
+def moduleOne(request):
+    if(request.method=="GET"):
+        form = ModuleOneForm()
+        return render(request,'registration_form/module_one.html',{'form':form})
+    else:
+        return redirect('/moduleOne-2')
+
+
+def moduleOne2(request):
+    if(request.method=="GET"):
+        form = ModuleOneForm2()
+        return render(request,'registration_form/module_one2.html',{'form':form})
+    else:
+        return redirect('/moduleOne-3')
+
+def moduleOne3(request):
+    if(request.method=="GET"):
+        form = ModuleOneForm3()
+        return render(request,'registration_form/module_one3.html',{'form':form})
+    else:
+        return redirect('/moduleOne-2')
