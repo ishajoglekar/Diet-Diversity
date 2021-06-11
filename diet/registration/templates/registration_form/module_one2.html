@@ -1,0 +1,126 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags %}
+
+{%block links %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">>
+<link rel="stylesheet" href="{% static 'css/consent.css' %}">
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+{% endblock %}
+
+{% block title %}
+<title>Module One</title>
+{% endblock %}
+
+{% block content %}
+<style>
+    body{
+        font-size: 1.1rem!important;
+    }
+</style>
+<div class="container ml-3">
+    <div class="card mt-3" style="padding:1rem 3rem">
+        <div class="row">
+            <h2 class="mb-3 text-center">Module One</h2>
+            <div class="col-md-12">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">8. {{form.citrus_fruits_blank.label_tag}}</p>
+                            {% for radio in form.citrus_fruits_blank %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">9. {{form.not_richsource_iron.label_tag}}</p>
+                            {% for radio in form.not_richsource_iron %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">10. {{form.source_vitaminA.label_tag}}</p>
+                            {% for radio in form.source_vitaminA %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+
+
+                     
+                        <div class="col-md-12 mb-3 form-group">
+                            <p class="fw-bold mb-0">11. {{form.imp_eat_fruits_vegetables.label_tag}}</p>
+                            {% for radio in form.imp_eat_fruits_vegetables %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+
+
+
+                        <div class="col-md-12 mb-3 form-group">
+                            <p class="fw-bold mb-0">12. {{form.reason_wide_variety_food.label_tag}}</p>
+                            {% for radio in form.reason_wide_variety_food %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+
+
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">13. {{form.microgreen.label_tag}}</p>
+                            {% for radio in form.microgreen %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+
+
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">14. {{form.microgreen_example.label_tag}}</p>
+                            {% for radio in form.microgreen_example %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">15. {{form.harvestdays_microgreen.label_tag}}</p>
+                            {% for radio in form.harvestdays_microgreen %}
+                               <div>
+                                {{ radio.tag }}
+                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                               </div>
+                            {% endfor %}
+                        </div>
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
