@@ -139,3 +139,6 @@ class FirstModule(models.Model):
     chess = models.CharField(max_length=255)
     food = models.CharField(max_length=255)
     drinks = models.CharField(max_length=255)
+
+class ModuleOne(models.Model):
+    pass
