@@ -71,7 +71,7 @@ def students_info(request):
             parentUser.groups.add(parent_group)
             parentUser.save()
 
-            parent = parentform.save(commit=False)   
+            parent = parentform.save(commit=False)    
             parent.user = parentUser
             parent.first_password = ''
             parent.password_changed = True                       
@@ -522,13 +522,10 @@ def nutriPartTwo(request):
         print(','.join(request.POST.getlist('drinks')))
 
 def student_dashboard(request):
-
     return render(request,'registration_form/student_dashboard.html')
 
 def teacher_dashboard(request):
     return render(request,'registration_form/teacher_dashboard.html')
-
-
 
 #user to check if a user belongs to a group
 def is_member(user,grp):
@@ -542,22 +539,56 @@ def is_member(user,grp):
 
 def moduleOne(request):
     if(request.method=="GET"):
-        form = ModuleOneForm()
+        if(request.session.get('moduleOne1')):
+            form = ModuleOneForm(request.session.get('moduleOne1'))
+        else:
+            form = ModuleOneForm()
+
         return render(request,'registration_form/module_one.html',{'form':form})
-    else:
-        return redirect('/moduleOne-2')
+    else:        
+        form = ModuleOneForm(request.POST)
+        if form.is_valid():                        
+            request.session['moduleOne1'] = request.POST
+            return redirect('/moduleOne-2')
+        else:
+            print(form.errors.as_data())
+            return render(request,'registration_form/module_one.html',{'form':form})
+
+
+def draft(request):
+    module = request.META.get('HTTP_REFERER').split('/')[-2]
+    print(module=="moduleOne")
+    # if module=="moduleOne":
+    #     form = 
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 def moduleOne2(request):
     if(request.method=="GET"):
-        form = ModuleOneForm2()
+        if(request.session.get('moduleOne2')):
+            form = ModuleOneForm(request.session.get('moduleOne2'))
+        else:
+            form = ModuleOneForm2()
         return render(request,'registration_form/module_one2.html',{'form':form})
     else:
-        return redirect('/moduleOne-3')
+        form = ModuleOneForm2(request.POST)
+        if form.is_valid():
+            request.session['moduleOne2'] = request.POST
+            return redirect('/moduleOne-3')
+        else:
+            return render(request,'registration_form/module_one2.html',{'form':form})
 
 def moduleOne3(request):
     if(request.method=="GET"):
         form = ModuleOneForm3()
         return render(request,'registration_form/module_one3.html',{'form':form})
     else:
-        return redirect('/moduleOne-2')
+        form = ModuleOneForm3(request.POST)
+        if form.is_valid():            
+            page1 = request.session['moduleOne1']
+            page2 = request.session['moduleOne2']
+            print(request.session['moduleOne1'])
+            print(request.session['moduleOne2'])
+            mod1 = form.save(commit=False)  
+            student = StudentsInfo.objects.filter(user = request.user).first()
+            mod1.student = student
