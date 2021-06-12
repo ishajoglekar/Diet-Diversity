@@ -1,4 +1,5 @@
 import io
+import ast
 from django.contrib.auth.models import Group
 from django.db.models.expressions import F
 from django.http.response import HttpResponseForbidden
@@ -510,16 +511,14 @@ def getFirstModule(request):
         return redirect('/nutriPartTwo')
 
 
-def nutri(request):
-    # return render(request,'registration/nutri-infotainment.html')
+def nutri(request):    
     return redirect('nutriPartTwo')
 
 def nutriPartTwo(request):
     if(request.method == "GET"):
         form = FirstModuleForm()
         return render(request,'registration_form/first_module_second.html',{'form':form})
-    else:
-        # print(request.POST.getlist('drinks'))
+    else:        
         print(','.join(request.POST.getlist('drinks')))
 
 def student_dashboard(request):
@@ -538,41 +537,23 @@ def is_member(user,grp):
 #     school = School.objects.filter(name__icontains = str).first()
 #     print(school)
 
-def moduleOne(request):
-    if(request.method=="GET"):
-        
-        if(request.session.get('moduleOne1')):
-            form = ModuleOneForm(request.session.get('moduleOne1'))
-        elif ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
-            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
-            if draftForm.draft:
-                form = ModuleOneForm(instance=draftForm)
-        else:
-            form = ModuleOneForm()
-
-        return render(request,'registration_form/module_one.html',{'form':form})
-    else:        
-        form = ModuleOneForm(request.POST)
-        if form.is_valid():                        
-            request.session['moduleOne1'] = request.POST
-            return redirect('/moduleOne-2')
-        else:
-            print(form.errors.as_data())
-            return render(request,'registration_form/module_one.html',{'form':form})
-
-
 def draft(request):
-    module = request.META.get('HTTP_REFERER').split('/')[-2]
-    print(module=="moduleOne")
-    if module=="moduleOne":
-        #for removinf csrf field
-        temp = {}
-        for key,value in request.POST.items():
-            temp[key] = value
-        del temp['csrfmiddlewaretoken']
-        print(temp)
+    module = request.META.get('HTTP_REFERER').split('/')[-2]    
 
-        #checking of draft exists
+    #1st Page
+    if module=="moduleOne":         
+        #for removing csrf field 
+        temp = {}       
+        print(type(request.POST))
+        for key in request.POST:                            
+                if key == 'if_grow_what':
+                    temp[key] = request.POST[key]
+                else:
+                    temp[key] = request.POST.getlist(key)
+        del temp['csrfmiddlewaretoken']
+        print(temp)        
+
+        #checking if draft exists
         if  ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
             draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
             if draftForm.draft:
@@ -592,35 +573,234 @@ def draft(request):
             form.student = StudentsInfo.objects.get(user=request.user)
             form.draft = True
             form.save()
+
+    #2nd Page
+    elif module=="moduleOne-2":
+        temp = {}
+        for key in request.POST:             
+            temp[key] = request.POST.getlist(key)
+        del temp['csrfmiddlewaretoken']            
+
+        draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+        if draftForm.draft:
+            for name in ModuleOne._meta.get_fields():
+                name = name.column
+                if name == 'id' or name == 'student_id' or name == 'draft':
+                        continue
+                if name in temp:
+                    setattr(draftForm, name, temp[name])      
+                else:
+                    setattr(draftForm, name,getattr(draftForm, name) or None) 
+            draftForm.save()
+    
+    #3rd Page
+    elif module=="moduleOne-3":
+        temp = {}
+        for key in request.POST:             
+            temp[key] = request.POST.getlist(key)
+        del temp['csrfmiddlewaretoken']            
+
+        draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+        if draftForm.draft:
+            for name in ModuleOne._meta.get_fields():
+                name = name.column
+                if name == 'id' or name == 'student_id' or name == 'draft':
+                        continue
+                if name in temp:
+                    setattr(draftForm, name, temp[name])      
+                else:
+                    setattr(draftForm, name,getattr(draftForm, name) or None) 
+            draftForm.save()
+    
+        
+
     return redirect(request.META.get('HTTP_REFERER'))
+
+
+def moduleOne(request):
+    if(request.method=="GET"):
+
+        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
+
+        #prepopulating from db
+        if draftForm.draft:     
+            mod = ModuleOneForm()
+            temp = {}
+            for name in ModuleOne._meta.get_fields():
+                name = name.column
+                if name in mod.fields:  
+                    str = getattr(draftForm, name)
+
+                    if str==None or name=='if_grow_what':
+                        temp[name] = getattr(draftForm, name)
+                    else:
+                        temp[name] = ast.literal_eval(getattr(draftForm, name))
+       
+            form = ModuleOneForm(temp)                           
+            return render(request,'registration_form/module_one.html',{'form':form})
+
+        #new form
+        else:            
+            form = ModuleOneForm()
+            return render(request,'registration_form/module_one.html',{'form':form})
+
+    #POST            
+    else:        
+        form = ModuleOneForm(request.POST)                
+        #valid form
+        if form.is_valid():                    
+            temp = {}
+            for key in request.POST:                            
+                if key == 'if_grow_what':
+                    temp[key] = request.POST[key]
+                else:
+                    temp[key] = request.POST.getlist(key)
+            del temp['csrfmiddlewaretoken']
+
+            if  ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
+                draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+                if draftForm.draft:
+                # updating drafts
+                    for name in ModuleOne._meta.get_fields():
+                        name = name.column
+                        if name == 'id' or name == 'student_id' or name == 'draft':
+                                continue
+                        if name in temp:
+                            setattr(draftForm, name, temp[name])      
+                        else:
+                            setattr(draftForm, name,getattr(draftForm, name) or None) 
+                    draftForm.save()
+            else:
+                #creating new record
+                form = ModuleOne(**temp)
+                form.student = StudentsInfo.objects.get(user=request.user)
+                form.draft = True
+                form.save()
+
+            return redirect('/moduleOne-2')
+
+        #invalid form
+        else:                   
+            print(form.errors.as_data())
+            return render(request,'registration_form/module_one.html',{'form':form})
 
 
 def moduleOne2(request):
     if(request.method=="GET"):
-        if(request.session.get('moduleOne2')):
-            form = ModuleOneForm(request.session.get('moduleOne2'))
-        else:
-            form = ModuleOneForm2()
-        return render(request,'registration_form/module_one2.html',{'form':form})
-    else:
-        form = ModuleOneForm2(request.POST)
-        if form.is_valid():
-            request.session['moduleOne2'] = request.POST
-            return redirect('/moduleOne-3')
-        else:
+
+        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
+
+        #prepopulating from db
+        if draftForm.draft:     
+            mod = ModuleOneForm2()
+            temp = {}
+            for name in ModuleOne._meta.get_fields():
+                name = name.column
+                if name in mod.fields:  
+                    str = getattr(draftForm, name)
+
+                    if str==None:
+                        temp[name] = getattr(draftForm, name)
+                    else:
+                        temp[name] = ast.literal_eval(getattr(draftForm, name))
+       
+            form = ModuleOneForm2(temp)                           
             return render(request,'registration_form/module_one2.html',{'form':form})
+
+        #new form
+        else:            
+            form = ModuleOneForm2()
+            return render(request,'registration_form/module_one2.html',{'form':form})
+
+    #POST
+    else:
+        form = ModuleOneForm2(request.POST)                
+        #valid form
+        if form.is_valid():                    
+            temp = {}
+            for key in request.POST:             
+                temp[key] = request.POST.getlist(key)
+
+            del temp['csrfmiddlewaretoken']            
+
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+            if draftForm.draft:
+                for name in ModuleOne._meta.get_fields():
+                    name = name.column
+                    if name == 'id' or name == 'student_id' or name == 'draft':
+                            continue
+                    if name in temp:
+                        setattr(draftForm, name, temp[name])      
+                    else:
+                        setattr(draftForm, name,getattr(draftForm, name) or None) 
+                draftForm.save()
+
+            return redirect('/moduleOne-3')
+
+        #invalid form
+        else:                   
+            print(form.errors.as_data())
+            return render(request,'registration_form/module_one.html',{'form':form})
+
 
 def moduleOne3(request):
     if(request.method=="GET"):
-        form = ModuleOneForm3()
-        return render(request,'registration_form/module_one3.html',{'form':form})
+        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
+
+        #prepopulating from db
+        if draftForm.draft:     
+            mod = ModuleOneForm3()
+            temp = {}
+            for name in ModuleOne._meta.get_fields():
+                name = name.column
+                if name in mod.fields:  
+                    str = getattr(draftForm, name)
+
+                    if str==None:
+                        temp[name] = getattr(draftForm, name)
+                    else:
+                        temp[name] = ast.literal_eval(getattr(draftForm, name))
+       
+            form = ModuleOneForm3(temp)                           
+            return render(request,'registration_form/module_one3.html',{'form':form})
+
+        #new form
+        else:            
+            form = ModuleOneForm3()
+            return render(request,'registration_form/module_one3.html',{'form':form})
+
+    #POST
     else:
-        form = ModuleOneForm3(request.POST)
-        if form.is_valid():            
-            page1 = request.session['moduleOne1']
-            page2 = request.session['moduleOne2']
-            print(request.session['moduleOne1'])
-            print(request.session['moduleOne2'])
-            mod1 = form.save(commit=False)  
-            student = StudentsInfo.objects.filter(user = request.user).first()
-            mod1.student = student
+        form = ModuleOneForm3(request.POST)                
+        #valid form
+        if form.is_valid():                    
+            temp = {}
+            for key in request.POST:             
+                temp[key] = ' '.join(request.POST.getlist(key))
+            del temp['csrfmiddlewaretoken']            
+
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+            if draftForm.draft:
+                for name in ModuleOne._meta.get_fields():
+                    name = name.column
+                    if name == 'id' or name == 'student_id' or name == 'draft':
+                            continue
+                    elif name == 'if_grow_what':
+                        setattr(draftForm, name, getattr(draftForm,name))                        
+                    elif name in temp:
+                        setattr(draftForm, name, temp[name])      
+                    else:
+                        list = ' '.join(ast.literal_eval(getattr(draftForm, name)))
+                        setattr(draftForm, name, list)      
+
+                draftForm.draft = False
+                draftForm.save()
+            return redirect('/student_dashboard')
+
+        #invalid form
+        else:                   
+            print(form.errors.as_data())
+            return render(request,'registration_form/module_one.html',{'form':form})
