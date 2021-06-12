@@ -131,8 +131,8 @@ class CustomAuthenticationForm(AuthenticationForm):
 class ModuleOneForm(forms.ModelForm):
     class Meta:
         model = ModuleOne
-        fields = ['student','draft','nutriGarden', 'source_fruits_vegetables', 'grow_own_food', 'if_grow_what', 'reason_gardening', 'healthy_diet', 'imp_nutrients']
-        
+        fields = ['nutriGarden', 'source_fruits_vegetables', 'grow_own_food', 'if_grow_what', 'reason_gardening', 'healthy_diet', 'imp_nutrients']
+
     if_grow_what = forms.CharField(label=("If you grow your own food, what do you grow? ( if you don't grow your own food,please specify N/A)"),max_length=255,required=False)
     FOOD_INTAKES=[('1-5',''),
          ('6-10',''),
@@ -195,7 +195,7 @@ class ModuleOneForm(forms.ModelForm):
     
 
     # def clean(self):
-    #     if not self.cleaned_data['grow_own_food']:
+    #     print(self.cleaned_data['grow_own_food']):
     #         self.add_error('grow_own_food','REQUEIRED')
     #     return self.cleaned_data
 
@@ -211,9 +211,6 @@ class ModuleOneForm2(forms.ModelForm):
         ('Vitamin C','Vitamin C'),
         ('Iron', 'Iron')
     ]
-
-    YES_NO=[(True,'Yes'),(False,'No')]
-
 
     not_richsource_iron_choices = [
         ('Red meat','Red meat'),
@@ -245,7 +242,7 @@ class ModuleOneForm2(forms.ModelForm):
          ('None of the above','None of the above')]
 
 
-    microgreen_example_choices=[('Sprouts','prouts'),
+    microgreen_example_choices=[('Sprouts','Sprouts'),
          ('True Leaves','True Leaves'),
          ('Flowers','Flowers'),
          ('Roots','Roots')]
@@ -256,14 +253,14 @@ class ModuleOneForm2(forms.ModelForm):
          ('12-14 days','12-14 days')]
 
     
-    citrus_fruits_blank = forms.ChoiceField(label = ("Citrus fruits are an excellent source of ----------?"),choices=citrus_fruits_blank_choices,widget=forms.RadioSelect())
-    not_richsource_iron = forms.ChoiceField(label = ("Which is not a rich source of iron?"),choices=not_richsource_iron_choices,widget=forms.RadioSelect())
-    source_vitaminA = forms.ChoiceField(label = ("Do you know what is a Nutri-garden?"),choices=source_vitaminA_choices,widget=forms.RadioSelect())
-    imp_eat_fruits_vegetables = forms.ChoiceField(label = ("Do you know what is a Nutri-garden?"),choices=imp_eat_fruits_vegetables_choices,widget=forms.RadioSelect())
-    reason_wide_variety_food = forms.ChoiceField(label = ("Do you know what is a Nutri-garden?"),choices=reason_wide_variety_food_choices,widget=forms.RadioSelect())    
-    microgreen=  forms.ChoiceField(label = ("What are microgreens?"),choices=microgreen_choices, widget= forms.RadioSelect())
-    microgreen_example= forms.ChoiceField(label = ("Examples of Microgreens?"),choices=microgreen_example_choices, widget= forms.RadioSelect())
-    harvestdays_microgreen= forms.ChoiceField(label = ("How many days does it take to harvest microgreens"),choices=harvestdays_microgreen_choices, widget= forms.RadioSelect())
+    citrus_fruits_blank = forms.ChoiceField(label = ("Citrus fruits are an excellent source of ----------?"),choices=citrus_fruits_blank_choices,widget=forms.RadioSelect(),required=False)
+    not_richsource_iron = forms.ChoiceField(label = ("Which is not a rich source of iron?"),choices=not_richsource_iron_choices,widget=forms.RadioSelect(),required=False)
+    source_vitaminA = forms.ChoiceField(label = ("Which of these is a common source of vitamin A?"),choices=source_vitaminA_choices,widget=forms.RadioSelect(),required=False)
+    imp_eat_fruits_vegetables = forms.ChoiceField(label = ("Why is it important to eat fruits and vegetables?"),choices=imp_eat_fruits_vegetables_choices,widget=forms.RadioSelect(),required=False)
+    reason_wide_variety_food = forms.ChoiceField(label = ("What is the main reason for eating a wide variety of foods?"),choices=reason_wide_variety_food_choices,widget=forms.RadioSelect(),required=False)    
+    microgreen=  forms.ChoiceField(label = ("What are microgreens?"),choices=microgreen_choices, widget= forms.RadioSelect(),required=False)
+    microgreen_example= forms.ChoiceField(label = ("Examples of Microgrens?"),choices=microgreen_example_choices, widget= forms.RadioSelect(),required=False)
+    harvestdays_microgreen= forms.ChoiceField(label = ("How many days does it take to harvest microgreens"),choices=harvestdays_microgreen_choices, widget= forms.RadioSelect(),required=False)
 
 
 class ModuleOneForm3(forms.ModelForm):
@@ -284,10 +281,8 @@ class ModuleOneForm3(forms.ModelForm):
          ('All of the above','All of the above'),
          ('None of the above','None of the above')]
 
-    YES_NO=[(True,'Yes'),(False,'No')]
 
-
-    newspaper_grow_microgreen_choices=[('True','True'),
+    True_False=[('True','True'),
          ('False','False')]
     
     microgreen_first_step_choices=[('To add soil in the container','To add soil in the container'),
@@ -314,13 +309,13 @@ class ModuleOneForm3(forms.ModelForm):
          ('All of the above','All of the above'),
          ('None of the above','None of the above')]
 
-    microgreen_grow_seeds_kitchen = forms.ChoiceField(label = ("Microgreens can be grown from almost all seeds available in the kitchen."),choices=YES_NO, widget= forms.RadioSelect())
-    microgreen_nutritiousthan_fullgrownvegetables = forms.ChoiceField(label = ("Microgreens are more nutritious than full-grown vegetables."),choices=YES_NO, widget= forms.RadioSelect())
-    microgreen_immunity = forms.ChoiceField(label = ("Microgreens help in building immunity."),choices=YES_NO, widget= forms.RadioSelect())
-    microgreen_variety = forms.ChoiceField(label = ("What varieties can be grown in microgreens?"),choices=microgreen_variety_choices, widget= forms.RadioSelect())
-    microgreen_source = forms.ChoiceField(label = ("Where can microgreens be grown?"),choices=microgreen_source_choices, widget= forms.RadioSelect())
-    newspaper_grow_microgreen = forms.ChoiceField(label = ("Newspapers can be used as a medium to grow microgreens."),choices=newspaper_grow_microgreen_choices, widget= forms.RadioSelect())
-    microgreen_first_step = forms.ChoiceField(label = ("What is the first step to grow microgreens?"),choices=microgreen_first_step_choices, widget= forms.RadioSelect())
-    soaking_time_seeds = forms.ChoiceField(label = ("How many hours should we soak the seeds in water?"),choices=soaking_time_seeds_choices, widget= forms.RadioSelect())
-    microgreen_watering = forms.ChoiceField(label = ("How many times should microgreens be watered to keep the seed/plant moist?"),choices=microgreen_watering_choices, widget= forms.RadioSelect())
-    microgreen_use = forms.ChoiceField(label = ("How can we use a microgreen?"),choices=microgreen_use_choices, widget= forms.RadioSelect())
+    microgreen_grow_seeds_kitchen = forms.ChoiceField(label = ("Microgreens can be grown from almost all seeds available in the kitchen."),choices=True_False, widget= forms.RadioSelect(),required=False)
+    microgreen_nutritiousthan_fullgrownvegetables = forms.ChoiceField(label = ("Microgreens are more nutritious than full-grown vegetables."),choices=True_False, widget= forms.RadioSelect(),required=False)
+    microgreen_immunity = forms.ChoiceField(label = ("Microgreens help in building immunity."),choices=True_False, widget= forms.RadioSelect(),required=False)
+    microgreen_variety = forms.ChoiceField(label = ("What varieties can be grown in microgreens?"),choices=microgreen_variety_choices, widget= forms.RadioSelect(),required=False)
+    microgreen_source = forms.ChoiceField(label = ("Where can microgreens be grown?"),choices=microgreen_source_choices, widget= forms.RadioSelect(),required=False)
+    newspaper_grow_microgreen = forms.ChoiceField(label = ("Newspapers can be used as a medium to grow microgreens."),choices=True_False, widget= forms.RadioSelect(),required=False)
+    microgreen_first_step = forms.ChoiceField(label = ("What is the first step to grow microgreens?"),choices=microgreen_first_step_choices, widget= forms.RadioSelect(),required=False)
+    soaking_time_seeds = forms.ChoiceField(label = ("How many hours should we soak the seeds in water?"),choices=soaking_time_seeds_choices, widget= forms.RadioSelect(),required=False)
+    microgreen_watering = forms.ChoiceField(label = ("How many times should microgreens be watered to keep the seed/plant moist?"),choices=microgreen_watering_choices, widget= forms.RadioSelect(),required=False)
+    microgreen_use = forms.ChoiceField(label = ("How can we use a microgreen?"),choices=microgreen_use_choices, widget= forms.RadioSelect(),required=False)
