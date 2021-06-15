@@ -39,6 +39,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_grow_seeds_kitchen.errors %}
+                                <div class="alert alert-danger">{{form.microgreen_grow_seeds_kitchen.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -49,6 +52,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_nutritiousthan_fullgrownvegetables.errors %}
+                                <div class="alert alert-danger">{{form.microgreen_nutritiousthan_fullgrownvegetables.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -59,6 +65,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_immunity.errors %}
+                                <div class="alert alert-danger">{{form.microgreen_immunity.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -72,6 +81,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_variety.errors %}
+                            <div class="alert alert-danger">{{form.microgreen_variety.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -83,6 +95,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_source.errors %}
+                            <div class="alert alert-danger">{{form.microgreen_source.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -93,6 +108,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.newspaper_grow_microgreen.errors %}
+                            <div class="alert alert-danger">{{form.newspaper_grow_microgreen.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -105,6 +123,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_first_step.errors %}
+                            <div class="alert alert-danger">{{form.microgreen_first_step.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -112,9 +133,12 @@
                             {% for radio in form.soaking_time_seeds %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_soaking_time_seeds_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.soaking_time_seeds.errors %}
+                            <div class="alert alert-danger">{{form.soaking_time_seeds.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -126,6 +150,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_watering.errors %}
+                            <div class="alert alert-danger">{{form.microgreen_watering.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -136,6 +163,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_use.errors %}
+                            <div class="alert alert-danger">{{form.microgreen_use.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="row">

@@ -40,6 +40,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.nutriGarden.errors %}
+                                <div class="alert alert-danger">{{form.nutriGarden.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -50,6 +53,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.source_fruits_vegetables.errors %}
+                                <div class="alert alert-danger">{{form.source_fruits_vegetables.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -69,7 +75,9 @@
                         <div class="col-md-12 mb-3">
                             <p class="fw-bold mb-0">4. {{form.if_grow_what.label_tag}}</p>
                             {{form.if_grow_what|as_crispy_field}}
-                            
+                            {% if form.if_grow_what.errors %}
+                                <div class="alert alert-danger">{{form.if_grow_what.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -82,6 +90,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.reason_gardening.errors %}
+                                <div class="alert alert-danger">{{form.reason_gardening.errors}}</div>
+                            {% endif %}
                         </div>
 
 

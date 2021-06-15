@@ -39,6 +39,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.citrus_fruits_blank.errors %}
+                                <div class="alert alert-danger">{{form.citrus_fruits_blank.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -49,6 +52,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.not_richsource_iron.errors %}
+                                <div class="alert alert-danger">{{form.not_richsource_iron.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -59,6 +65,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.source_vitaminA.errors %}
+                                <div class="alert alert-danger">{{form.source_vitaminA.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -71,6 +80,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.imp_eat_fruits_vegetables.errors %}
+                                <div class="alert alert-danger">{{form.imp_eat_fruits_vegetables.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -83,6 +95,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.reason_wide_variety_food.errors %}
+                                <div class="alert alert-danger">{{form.reason_wide_variety_food.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -94,6 +109,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen.errors %}
+                                <div class="alert alert-danger">{{form.microgreen.errors}}</div>
+                            {% endif %}
                         </div>
 
 
@@ -105,6 +123,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.microgreen_example.errors %}
+                                <div class="alert alert-danger">{{form.microgreen_example.errors}}</div>
+                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
@@ -115,6 +136,9 @@
                                 <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
+                            {% if form.harvestdays_microgreen.errors %}
+                                <div class="alert alert-danger">{{form.harvestdays_microgreen.errors}}</div>
+                            {% endif %}
                         </div>
                         <div class="row">
                             <div class="col-md-4">

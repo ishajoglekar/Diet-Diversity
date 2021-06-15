@@ -99,12 +99,10 @@ def students_info(request):
             user = authenticate(request, username=previousPOST['username'], password=previousPOST['password1'])
             if user is not None:
                 login(request, user)
-
-            print(request.session['data']) 
+            
             del request.session['data']
             return redirect('/home')
-        else:            
-            print(form.errors.as_data())
+        else:                        
             return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':studentuserform})
 
 
@@ -121,8 +119,7 @@ def loginU(request):
         form = CustomAuthenticationForm(request.POST)
         if user is not None:
             if is_member(user,grp):
-                login(request,user)
-                print(grp_name)
+                login(request,user)                
                 if grp_name == 'Parents':
                     return redirect('/parent_dashboard')
                 elif grp_name == 'Students':
@@ -141,8 +138,7 @@ def dashboard(request):
     if request.method == "GET":
         students = ParentsInfo.objects.filter(user= request.user).first().studentsinfo_set.all()
         helper = EncryptionHelper()
-        for student in students:
-            print(helper.decrypt(student.name))
+        for student in students:            
             student.name = helper.decrypt(student.name)
         return render(request,'registration_form/dashboard.html',{'students':students})
 
@@ -173,13 +169,11 @@ def addStudentForm(request):
             student.user = studentuser
             student.first_password = ''
             student.password_changed = True
-            student.name = encryptionHelper.encrypt(request.POST['name'])
-            print(encryptionHelper.decrypt(student.name))
+            student.name = encryptionHelper.encrypt(request.POST['name'])            
             student.parent = ParentsInfo.objects.filter(user= request.user).first()
             student.save()
             return redirect('/parent_dashboard')
-        else:            
-            print(form.errors.as_data())
+        else:                        
             return render(request,'registration_form/add_student.html',{'form':form,'user_creation_form':studentuserform})
 
 
@@ -241,15 +235,13 @@ def bulkRegister(request):
 
         student_data = list()
         # iterating over the rows and
-        # getting value from each cell in row  
-        print(studentSheet.max_row)              
+        # getting value from each cell in row                      
         for row in studentSheet.iter_rows():
             row_data = list()
             for cell in row:                                
                 if cell.row == 1 :                
                     continue
-                if cell.column_letter == 'A':
-                    print(cell.value)
+                if cell.column_letter == 'A':                    
                     row_data.append(encryptionHelper.encrypt(str(cell.value)))
                     row_data.append(str(cell.value.lower().replace(" ",""))+str(random.randint(11,99)))
                 elif cell.column_letter == 'B':
@@ -277,8 +269,7 @@ def bulkRegister(request):
                 if encryptionHelper.decrypt(parent.email) == encryptionHelper.decrypt(row[0]):
                     skipparent = True
                     break
-
-            print(skipparent)       
+               
             if not skipparent:              
                 password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 8))                      
                 parentUser = User(username=row[2])
@@ -305,8 +296,7 @@ def bulkRegister(request):
             if index == 0:
                 continue  
             #creating student user
-            skipstudent = StudentsInfo.objects.filter(rollno = row[3]).first()  
-            print(skipstudent)       
+            skipstudent = StudentsInfo.objects.filter(rollno = row[3]).first()                
             if not skipstudent:               
                 password = ''.join(random.choices(string.ascii_lowercase + string.digits, k = 8))
                 studentUser = User(username=row[1])
@@ -390,8 +380,7 @@ def downloadData(request):
 
     teacher = TeacherInCharge.objects.filter(user = request.user).first()
     rows = StudentsInfo.objects.filter(teacher=teacher).values_list('name','rollno','dob','gender','address','school','parent','user','first_password','password_changed')    
-    parentEmail = []
-    print("Students")
+    parentEmail = []    
     for row in rows:        
         row_num += 1
         for col_num in range(len(studentColumns)):            
@@ -437,12 +426,8 @@ def downloadData(request):
     for col_num in range(len(parentColumns)):
         parentSheet.write(row_num, col_num, parentColumns[col_num]) # at 0 row 0 column 
 
-    rows = ParentsInfo.objects.all().values_list('name','email','age','gender','address','city','state','pincode','edu','occupation','religion','no_of_family_members','children_count','type_of_family','user','first_password','password_changed')
-    print("Parents")
-    for row in rows:            
-        print(parentEmail)
-        print(encryptionHelper.decrypt(row[1]))
-        print(encryptionHelper.decrypt(row[1]) in parentEmail)
+    rows = ParentsInfo.objects.all().values_list('name','email','age','gender','address','city','state','pincode','edu','occupation','religion','no_of_family_members','children_count','type_of_family','user','first_password','password_changed')    
+    for row in rows:                
         if encryptionHelper.decrypt(row[1]) in parentEmail:
             row_num += 1
             for col_num in range(len(parentColumns)):   
@@ -502,24 +487,24 @@ def downloadData(request):
     return response
 
 
-def getFirstModule(request):
-    if(request.method == "GET"):
-        form = FirstModuleForm()
-        return render(request,'registration_form/first_module.html',{'form':form})
-    else:
-        request.session['data'] = request.POST
-        return redirect('/nutriPartTwo')
+# def getFirstModule(request):
+#     if(request.method == "GET"):
+#         form = FirstModuleForm()
+#         return render(request,'registration_form/first_module.html',{'form':form})
+#     else:
+#         request.session['data'] = request.POST
+#         return redirect('/nutriPartTwo')
 
 
-def nutri(request):    
-    return redirect('nutriPartTwo')
+# def nutri(request):    
+#     return redirect('nutriPartTwo')
 
-def nutriPartTwo(request):
-    if(request.method == "GET"):
-        form = FirstModuleForm()
-        return render(request,'registration_form/first_module_second.html',{'form':form})
-    else:        
-        print(','.join(request.POST.getlist('drinks')))
+# def nutriPartTwo(request):
+#     if(request.method == "GET"):
+#         form = FirstModuleForm()
+#         return render(request,'registration_form/first_module_second.html',{'form':form})
+#     else:        
+#         print(','.join(request.POST.getlist('drinks')))
 
 def student_dashboard(request):
     return render(request,'registration_form/student_dashboard.html')
@@ -535,272 +520,172 @@ def is_member(user,grp):
 # def test(request):
 #     str = "DSRV"
 #     school = School.objects.filter(name__icontains = str).first()
-#     print(school)
+
+
+
+def createTempDict(postData):
+    temp = {}       
+    for key in postData:                            
+            if key == 'source_fruits_vegetables' or key=='grow_own_food':
+                temp[key] = postData.getlist(key)
+            else:
+                temp[key] = postData[key]
+    del temp['csrfmiddlewaretoken'] 
+    return temp
+
+def creatingOrUpdatingDrafts(temp,user):
+    if  ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=user)).exists(): 
+        draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=user))
+        if draftForm.draft:
+        # updating drafts
+            for name in ModuleOne._meta.get_fields():
+                name = name.column
+                if name == 'id' or name == 'student_id' or name == 'draft':
+                        continue
+                if name in temp:
+                    setattr(draftForm, name, temp[name])      
+                else:
+                    setattr(draftForm, name, getattr(draftForm, name) or None) 
+            draftForm.save()
+            return True
+    else:
+        return False
 
 def draft(request):
     module = request.META.get('HTTP_REFERER').split('/')[-2]    
-
     #1st Page
     if module=="moduleOne":         
         #for removing csrf field 
-        temp = {}       
-        print(type(request.POST))
-        for key in request.POST:                            
-                if key == 'if_grow_what':
-                    temp[key] = request.POST[key]
-                else:
-                    temp[key] = request.POST.getlist(key)
-        del temp['csrfmiddlewaretoken']
-        print(temp)        
-
+        temp = createTempDict(request.POST)  
         #checking if draft exists
-        if  ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
-            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
-            if draftForm.draft:
-            # updating drafts
-                for name in ModuleOne._meta.get_fields():
-                    name = name.column
-                    if name == 'id' or name == 'student_id' or name == 'draft':
-                            continue
-                    if name in temp:
-                        setattr(draftForm, name, temp[name])      
-                    else:
-                        setattr(draftForm, name, None) 
-                draftForm.save()
-        else:
+        if not creatingOrUpdatingDrafts(temp,request.user):
             #creating new record
             form = ModuleOne(**temp)
             form.student = StudentsInfo.objects.get(user=request.user)
             form.draft = True
             form.save()
-
     #2nd Page
     elif module=="moduleOne-2":
-        temp = {}
-        for key in request.POST:             
-            temp[key] = request.POST.getlist(key)
-        del temp['csrfmiddlewaretoken']            
-
-        draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
-        if draftForm.draft:
-            for name in ModuleOne._meta.get_fields():
-                name = name.column
-                if name == 'id' or name == 'student_id' or name == 'draft':
-                        continue
-                if name in temp:
-                    setattr(draftForm, name, temp[name])      
-                else:
-                    setattr(draftForm, name,getattr(draftForm, name) or None) 
-            draftForm.save()
-    
+        temp = createTempDict(request.POST)  
+        creatingOrUpdatingDrafts(temp,request.user)
     #3rd Page
     elif module=="moduleOne-3":
-        temp = {}
-        for key in request.POST:             
-            temp[key] = request.POST.getlist(key)
-        del temp['csrfmiddlewaretoken']            
-
-        draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
-        if draftForm.draft:
-            for name in ModuleOne._meta.get_fields():
-                name = name.column
-                if name == 'id' or name == 'student_id' or name == 'draft':
-                        continue
-                if name in temp:
-                    setattr(draftForm, name, temp[name])      
-                else:
-                    setattr(draftForm, name,getattr(draftForm, name) or None) 
-            draftForm.save()
-    
-        
-
+        temp = createTempDict(request.POST)             
+        creatingOrUpdatingDrafts(temp,request.user)
     return redirect(request.META.get('HTTP_REFERER'))
 
 
 def moduleOne(request):
     if(request.method=="GET"):
-
         if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
             draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
-
-        #prepopulating from db
-        if draftForm.draft:     
-            mod = ModuleOneForm()
-            temp = {}
-            for name in ModuleOne._meta.get_fields():
-                name = name.column
-                if name in mod.fields:  
-                    str = getattr(draftForm, name)
-
-                    if str==None or name=='if_grow_what':
-                        temp[name] = getattr(draftForm, name)
-                    else:
-                        temp[name] = ast.literal_eval(getattr(draftForm, name))
-       
-            form = ModuleOneForm(temp)                           
-            return render(request,'registration_form/module_one.html',{'form':form})
-
-        #new form
-        else:            
-            form = ModuleOneForm()
-            return render(request,'registration_form/module_one.html',{'form':form})
-
+            if draftForm.draft:
+                mod = ModuleOneForm()
+                temp = {}
+                for name in ModuleOne._meta.get_fields():
+                    name = name.column
+                    if name in mod.fields:                   
+                        if name == 'source_fruits_vegetables' or name=='grow_own_food':
+                            temp[name] = ast.literal_eval(getattr(draftForm, name) or '[]')
+                        else:
+                            temp[name] = getattr(draftForm, name)
+                                    
+                form = ModuleOneForm(temp)                           
+                return render(request,'registration_form/module_one.html',{'form':form})
+            #new form
+            else:            
+                form = ModuleOneForm()
+                return render(request,'registration_form/module_one.html',{'form':form})
     #POST            
     else:        
         form = ModuleOneForm(request.POST)                
         #valid form
         if form.is_valid():                    
-            temp = {}
-            for key in request.POST:                            
-                if key == 'if_grow_what':
-                    temp[key] = request.POST[key]
-                else:
-                    temp[key] = request.POST.getlist(key)
-            del temp['csrfmiddlewaretoken']
+            temp = createTempDict(request.POST) 
 
-            if  ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
-                draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
-                if draftForm.draft:
-                # updating drafts
-                    for name in ModuleOne._meta.get_fields():
-                        name = name.column
-                        if name == 'id' or name == 'student_id' or name == 'draft':
-                                continue
-                        if name in temp:
-                            setattr(draftForm, name, temp[name])      
-                        else:
-                            setattr(draftForm, name,getattr(draftForm, name) or None) 
-                    draftForm.save()
-            else:
+            if not creatingOrUpdatingDrafts(temp,request.user):
                 #creating new record
                 form = ModuleOne(**temp)
                 form.student = StudentsInfo.objects.get(user=request.user)
                 form.draft = True
                 form.save()
 
-            return redirect('/moduleOne-2')
+                return redirect('/moduleOne-2')
 
         #invalid form
-        else:                   
-            print(form.errors.as_data())
+        else:                               
             return render(request,'registration_form/module_one.html',{'form':form})
 
 
 def moduleOne2(request):
     if(request.method=="GET"):
-
         if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
             draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
-
-        #prepopulating from db
-        if draftForm.draft:     
-            mod = ModuleOneForm2()
-            temp = {}
-            for name in ModuleOne._meta.get_fields():
-                name = name.column
-                if name in mod.fields:  
-                    str = getattr(draftForm, name)
-
-                    if str==None:
-                        temp[name] = getattr(draftForm, name)
-                    else:
-                        temp[name] = ast.literal_eval(getattr(draftForm, name))
-       
-            form = ModuleOneForm2(temp)                           
-            return render(request,'registration_form/module_one2.html',{'form':form})
-
-        #new form
-        else:            
-            form = ModuleOneForm2()
-            return render(request,'registration_form/module_one2.html',{'form':form})
-
+            if draftForm.draft:
+                mod = ModuleOneForm2()
+                temp = {}
+                for name in ModuleOne._meta.get_fields():
+                    name = name.column
+                    if name in mod.fields:  
+                        temp[name] = getattr(draftForm, name) or None
+        
+                form = ModuleOneForm2(temp)                           
+                return render(request,'registration_form/module_one2.html',{'form':form})
+            #new form
+            else:            
+                form = ModuleOneForm2()
+                return render(request,'registration_form/module_one2.html',{'form':form})
     #POST
     else:
         form = ModuleOneForm2(request.POST)                
         #valid form
         if form.is_valid():                    
-            temp = {}
-            for key in request.POST:             
-                temp[key] = request.POST.getlist(key)
-
-            del temp['csrfmiddlewaretoken']            
-
-            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
-            if draftForm.draft:
-                for name in ModuleOne._meta.get_fields():
-                    name = name.column
-                    if name == 'id' or name == 'student_id' or name == 'draft':
-                            continue
-                    if name in temp:
-                        setattr(draftForm, name, temp[name])      
-                    else:
-                        setattr(draftForm, name,getattr(draftForm, name) or None) 
-                draftForm.save()
-
+            temp = createTempDict(request.POST)             
+            creatingOrUpdatingDrafts(temp,request.user)
             return redirect('/moduleOne-3')
-
         #invalid form
-        else:                   
-            print(form.errors.as_data())
+        else:                               
             return render(request,'registration_form/module_one.html',{'form':form})
-
 
 def moduleOne3(request):
     if(request.method=="GET"):
         if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
             draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
-
-        #prepopulating from db
-        if draftForm.draft:     
-            mod = ModuleOneForm3()
-            temp = {}
-            for name in ModuleOne._meta.get_fields():
-                name = name.column
-                if name in mod.fields:  
-                    str = getattr(draftForm, name)
-
-                    if str==None:
-                        temp[name] = getattr(draftForm, name)
-                    else:
-                        temp[name] = ast.literal_eval(getattr(draftForm, name))
-       
-            form = ModuleOneForm3(temp)                           
-            return render(request,'registration_form/module_one3.html',{'form':form})
-
-        #new form
-        else:            
-            form = ModuleOneForm3()
-            return render(request,'registration_form/module_one3.html',{'form':form})
-
+            if draftForm.draft:
+                mod = ModuleOneForm3()
+                temp = {}
+                for name in ModuleOne._meta.get_fields():
+                    name = name.column
+                    if name in mod.fields:                  
+                        temp[name] = getattr(draftForm, name) or None
+                form = ModuleOneForm3(temp)                           
+                return render(request,'registration_form/module_one3.html',{'form':form})
+            #new form
+            else:            
+                form = ModuleOneForm3()
+                return render(request,'registration_form/module_one3.html',{'form':form})
     #POST
     else:
         form = ModuleOneForm3(request.POST)                
         #valid form
         if form.is_valid():                    
-            temp = {}
-            for key in request.POST:             
-                temp[key] = ' '.join(request.POST.getlist(key))
-            del temp['csrfmiddlewaretoken']            
-
+            temp = createTempDict(request.POST)
             draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
             if draftForm.draft:
                 for name in ModuleOne._meta.get_fields():
                     name = name.column
                     if name == 'id' or name == 'student_id' or name == 'draft':
-                            continue
-                    elif name == 'if_grow_what':
-                        setattr(draftForm, name, getattr(draftForm,name))                        
+                            continue                    
+                    elif name == 'source_fruits_vegetables' or name == 'grow_own_food':
+                        list = '; '.join(ast.literal_eval(getattr(draftForm, name)))
+                        setattr(draftForm, name, list)      
                     elif name in temp:
                         setattr(draftForm, name, temp[name])      
-                    else:
-                        list = ' '.join(ast.literal_eval(getattr(draftForm, name)))
-                        setattr(draftForm, name, list)      
 
                 draftForm.draft = False
                 draftForm.save()
             return redirect('/student_dashboard')
-
         #invalid form
-        else:                   
-            print(form.errors.as_data())
+        else:                               
             return render(request,'registration_form/module_one.html',{'form':form})
+            
