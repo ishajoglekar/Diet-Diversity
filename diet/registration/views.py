@@ -510,7 +510,22 @@ def student_dashboard(request):
     return render(request,'registration_form/student_dashboard.html')
 
 def teacher_dashboard(request):
-    return render(request,'registration_form/teacher_dashboard.html')
+    teacher = TeacherInCharge.objects.get(user=request.user)
+    total_students = teacher.studentsinfo_set.all()
+    # print(students)
+    result = []
+    for student in total_students:
+        if ModuleOne.objects.filter(student=student).exists():
+            draftForm = ModuleOne.objects.get(student=student)            
+            if not draftForm.draft:
+                result.append(student)
+
+    finalResult = []
+        
+    finalResult.append(len(result))
+    finalResult.append(len(total_students)-len(result))
+
+    return render(request,'registration_form/teacher_dashboard.html',{'result':result,'total_students':total_students,'finalResult':finalResult,'labels':['Filled','Not Filled']})
 
 #user to check if a user belongs to a group
 def is_member(user,grp):
