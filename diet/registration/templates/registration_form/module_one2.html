@@ -1,6 +1,7 @@
 {% extends 'partials/layout.html' %}
 
 {% load static %} {% load crispy_forms_tags %}
+{% load custom_filters %}
 
 {%block links %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -117,12 +118,16 @@
 
                         <div class="col-md-12 mb-3">
                             <p class="fw-bold mb-0">14. {{form.microgreen_example.label_tag}}</p>
-                            {% for radio in form.microgreen_example %}
-                               <div>
-                                {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
-                               </div>
-                            {% endfor %}
+                            <div class="row">
+                                {% for radio in form.microgreen_example %}
+                                <div class="mb-3">
+                                    <img src="{{ radio.choice_label }}" >
+                                    <br>
+                                    {{ radio.tag }}
+                                    {{ radio.choice_label|getValue}}
+                                </div>
+                                {% endfor %}
+                            </div>
                             {% if form.microgreen_example.errors %}
                                 <div class="alert alert-danger">{{form.microgreen_example.errors}}</div>
                             {% endif %}

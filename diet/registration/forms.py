@@ -242,10 +242,11 @@ class ModuleOneForm2(forms.ModelForm):
          ('None of the above','None of the above')]
 
 
-    microgreen_example_choices=[('Sprouts','Sprouts'),
-         ('True Leaves','True Leaves'),
-         ('Flowers','Flowers'),
-         ('Roots','Roots')]
+    microgreen_example_choices=[('Sprouts',"/static/img/sprouts.jpg"),
+    ('Sprouts','/static/img/sprouts.jpg'),
+    ('Sprouts','/static/img/sprouts.jpg'),
+    ('Sprouts','/static/img/sprouts.jpg'),
+    ]
 
     harvestdays_microgreen_choices=[('30 days','30 days'),
          ('5-10 days','5-10 days'),

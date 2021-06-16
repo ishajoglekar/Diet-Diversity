@@ -593,9 +593,9 @@ def moduleOne(request):
                 form = ModuleOneForm(temp)                           
                 return render(request,'registration_form/module_one.html',{'form':form})
             #new form
-            else:            
-                form = ModuleOneForm()
-                return render(request,'registration_form/module_one.html',{'form':form})
+        else:            
+            form = ModuleOneForm()
+            return render(request,'registration_form/module_one.html',{'form':form})
     #POST            
     else:        
         form = ModuleOneForm(request.POST)                
@@ -610,7 +610,7 @@ def moduleOne(request):
                 form.draft = True
                 form.save()
 
-                return redirect('/moduleOne-2')
+            return redirect('/moduleOne-2')
 
         #invalid form
         else:                               
@@ -632,9 +632,9 @@ def moduleOne2(request):
                 form = ModuleOneForm2(temp)                           
                 return render(request,'registration_form/module_one2.html',{'form':form})
             #new form
-            else:            
-                form = ModuleOneForm2()
-                return render(request,'registration_form/module_one2.html',{'form':form})
+        else:            
+            form = ModuleOneForm2()
+            return render(request,'registration_form/module_one2.html',{'form':form})
     #POST
     else:
         form = ModuleOneForm2(request.POST)                
@@ -661,9 +661,9 @@ def moduleOne3(request):
                 form = ModuleOneForm3(temp)                           
                 return render(request,'registration_form/module_one3.html',{'form':form})
             #new form
-            else:            
-                form = ModuleOneForm3()
-                return render(request,'registration_form/module_one3.html',{'form':form})
+        else:            
+            form = ModuleOneForm3()
+            return render(request,'registration_form/module_one3.html',{'form':form})
     #POST
     else:
         form = ModuleOneForm3(request.POST)                
