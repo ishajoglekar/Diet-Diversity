@@ -37,7 +37,7 @@
                             {% for radio in form.citrus_fruits_blank %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_citrus_fruits_blank_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
                             {% if form.citrus_fruits_blank.errors %}
@@ -50,7 +50,7 @@
                             {% for radio in form.not_richsource_iron %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_not_richsource_iron_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
                             {% if form.not_richsource_iron.errors %}
@@ -63,7 +63,7 @@
                             {% for radio in form.source_vitaminA %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_source_vitaminA_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
                             {% if form.source_vitaminA.errors %}
@@ -78,7 +78,7 @@
                             {% for radio in form.imp_eat_fruits_vegetables %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_imp_eat_fruits_vegetables_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
                             {% if form.imp_eat_fruits_vegetables.errors %}
@@ -93,7 +93,7 @@
                             {% for radio in form.reason_wide_variety_food %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_reason_wide_variety_food_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
                             {% if form.reason_wide_variety_food.errors %}
@@ -107,7 +107,7 @@
                             {% for radio in form.microgreen %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
                             {% if form.microgreen.errors %}
@@ -121,10 +121,12 @@
                             <div class="row">
                                 {% for radio in form.microgreen_example %}
                                 <div class="mb-3">
-                                    <img src="{{ radio.choice_label }}" >
-                                    <br>
-                                    {{ radio.tag }}
-                                    {{ radio.choice_label|getValue}}
+                                    <label for="id_microgreen_example_{{ forloop.counter0 }}">
+                                        <img src="{{ radio.choice_label }}" >
+                                        <br>
+                                        {{ radio.tag }}
+                                        {{ radio.choice_label|getValue}}
+                                    </label>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -138,7 +140,7 @@
                             {% for radio in form.harvestdays_microgreen %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="value_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_harvestdays_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
                             {% if form.harvestdays_microgreen.errors %}

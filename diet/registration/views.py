@@ -281,12 +281,12 @@ def bulkRegister(request):
                 parentUser.save()
 
                 #getting data from db for foreign keys
-                city = City.objects.filter(city=row[9].lower()).first()
-                state = State.objects.filter(state=row[10].lower()).first()
-                education = Education.objects.filter(education=row[11].lower()).first()
-                occupation = Occupation.objects.filter(occupation=row[12].lower()).first()
-                religion = ReligiousBelief.objects.filter(religion=row[13].lower()).first()
-                familyType = FamilyType.objects.filter(family=row[14].lower()).first()  
+                city = City.objects.filter(city__icontains=row[9]).first()
+                state = State.objects.filter(state__icontains=row[10]).first()
+                education = Education.objects.filter(education__icontains=row[11]).first()
+                occupation = Occupation.objects.filter(occupation__icontains=row[12]).first()
+                religion = ReligiousBelief.objects.filter(religion__icontains=row[13]).first()
+                familyType = FamilyType.objects.filter(family__icontains=row[14]).first()  
                 #creating parent
                 parent = ParentsInfo(email=row[0],name=row[1],gender=row[3],age=row[4],address=row[5],pincode=row[6],no_of_family_members=row[7],children_count=row[8],city=city,state=state,edu=education,occupation=occupation,religion=religion,type_of_family=familyType,first_password=password)
                 parent.user = parentUser                
@@ -313,7 +313,7 @@ def bulkRegister(request):
                     if encryptionHelper.decrypt(tempparent.email) == row[7]:
                         parent = tempparent
                   
-                school = School.objects.filter(name=row[6].lower()).first()                
+                school = School.objects.filter(name__icontains=row[6]).first()                
                 teacher = TeacherInCharge.objects.filter(user = request.user).first()
                 #creating student                 
                 dob = datetime.strptime(row[5],'%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
@@ -367,7 +367,6 @@ def getTemplate(request):
 def downloadData(request):
 
     output = io.BytesIO()
-
     wb =  xlsxwriter.Workbook(output)
     parentSheet = wb.add_worksheet("Parents Data")
     studentSheet = wb.add_worksheet("Students Data")
