@@ -2,7 +2,7 @@ import io
 import ast
 from django.contrib.auth.models import Group
 from django.db.models.expressions import F
-from django.http.response import HttpResponseForbidden
+
 import openpyxl
 import string
 import random
@@ -15,6 +15,7 @@ from django.contrib.auth import login,authenticate
 from datetime import datetime,date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required,user_passes_test
+from django.core.exceptions import PermissionDenied
 
 
 from registration.models import *
@@ -178,7 +179,7 @@ def addStudentForm(request):
 
 
 @login_required(login_url='/login')
-@user_passes_test(is_teacher)
+@user_passes_test(is_teacher,login_url='/forbidden')
 def bulkRegister(request):
     if(request.method=="GET"):
         return render(request,'registration/bulkregistration.html')
@@ -689,3 +690,6 @@ def moduleOne3(request):
         else:                               
             return render(request,'registration_form/module_one.html',{'form':form})
             
+
+def forbidden(request):
+    raise PermissionDenied
