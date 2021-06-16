@@ -14,10 +14,39 @@
     <title>Teacher Dashboard</title>
 {% endblock %}
 
-
         
 {%block content%}
 
-    <a href="/bulkRegister">Bulk Register</a>
+<div id="container" style="width: 75%;">
+    <canvas id="pie-chart"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script>
+
+var config = {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: {{ finalResult|safe }},
+          backgroundColor: [
+            '#0dc600', '#ddd',
+          ],
+          label: 'Forms filled for Module One'
+        }],
+        labels: {{ labels|safe }}
+      },
+      options: {
+        responsive: true
+      }
+    };
+
+    window.onload = function() {
+      var ctx = document.getElementById('pie-chart').getContext('2d');
+      window.myPie = new Chart(ctx, config);
+    };
+
+  </script>
+{{result|length}} / {{total_students|length}} have filled Module One
 
 {% endblock %}
