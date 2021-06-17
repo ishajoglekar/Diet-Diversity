@@ -26,6 +26,10 @@ urlpatterns = [
     path('moduleOne-2/',views.moduleOne2),
     path('moduleOne-3/',views.moduleOne3),
     path('draft/',views.draft),
-    path('forbidden/',views.forbidden)
+    path('forbidden/',views.forbidden),
+    path('parent_dashboard/<int:id>/',views.showStudent),
+    path('parent_dashboard/<int:id>/moduleOne',views.parentModuleOne),
+    path('parent_dashboard/<int:id>/moduleOne-2',views.parentModuleOne2,name='parentsModuleOne2'),
+    path('parent_dashboard/<int:id>/moduleOne-3',views.parentModuleOne3,name='parentsModuleOne3'),
 ]
   

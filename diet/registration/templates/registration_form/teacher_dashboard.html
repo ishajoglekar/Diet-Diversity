@@ -16,10 +16,19 @@
 
         
 {%block content%}
-
-<div id="container" style="width: 75%;">
-    <canvas id="pie-chart"></canvas>
+<div class="row">
+  <div class="col-md-4">
+    <h3 class="text-center">Module One</h3>
+<div id="container" style="width: 100%;">
+  <canvas id="pie-chart"></canvas>
+</div>
   </div>
+
+  
+
+
+
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
   <script>
@@ -46,7 +55,7 @@ var config = {
       window.myPie = new Chart(ctx, config);
     };
 
-  </script>
-{{result|length}} / {{total_students|length}} have filled Module One
+   
 
+  </script>
 {% endblock %}
