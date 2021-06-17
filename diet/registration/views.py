@@ -103,7 +103,7 @@ def students_info(request):
                 login(request, user)
             
             del request.session['data']
-            return redirect('/home')
+            return redirect('/parent_dashboard')
         else:                        
             return render(request,'registration_form/students_info.html',{'form':form,'user_creation_form':studentuserform})
 
