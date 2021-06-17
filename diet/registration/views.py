@@ -16,7 +16,7 @@ from datetime import datetime,date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.core.exceptions import PermissionDenied
-
+from django.urls import reverse
 
 from registration.models import *
 from .forms import ConsentForm, ModuleOneForm,ModuleOneForm2,ModuleOneForm3,ParentsInfoForm, StudentsInfoForm,CustomAuthenticationForm,FirstModuleForm
@@ -590,10 +590,14 @@ def draft(request):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
-def moduleOne(request):
+def moduleOne(request,user=None):
     if(request.method=="GET"):
-        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
-            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
+        print(user)
+        if user==None:
+            user = request.user
+
+        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=user))            
             if draftForm.draft:
                 mod = ModuleOneForm()
                 temp = {}
@@ -612,30 +616,45 @@ def moduleOne(request):
             form = ModuleOneForm()
             return render(request,'registration_form/module_one.html',{'form':form})
     #POST            
-    else:        
+    else:  
+        
+        flag = False
+        if user == None:
+            flag = True   
+            user = request.user  
         form = ModuleOneForm(request.POST)                
         #valid form
-        if form.is_valid():                    
+        if form.is_valid(): 
+            # print(flag)                   
             temp = createTempDict(request.POST) 
 
-            if not creatingOrUpdatingDrafts(temp,request.user):
+            if not creatingOrUpdatingDrafts(temp,user):
                 #creating new record
                 form = ModuleOne(**temp)
-                form.student = StudentsInfo.objects.get(user=request.user)
+                form.student = StudentsInfo.objects.get(user=user)
                 form.draft = True
                 form.save()
 
-            return redirect('/moduleOne-2')
+            if flag:
+                return redirect('/moduleOne-2')
+            else:
+                print("hey")
+                return redirect('parentsModuleOne2',id=StudentsInfo.objects.get(user=user).id)
+                
 
         #invalid form
         else:                               
             return render(request,'registration_form/module_one.html',{'form':form})
 
+        
 
-def moduleOne2(request):
+
+def moduleOne2(request,user=None):
     if(request.method=="GET"):
-        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
-            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
+        if user==None:
+            user = request.user
+        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=user))            
             if draftForm.draft:
                 mod = ModuleOneForm2()
                 temp = {}
@@ -652,20 +671,32 @@ def moduleOne2(request):
             return render(request,'registration_form/module_one2.html',{'form':form})
     #POST
     else:
+        flag = False
+        if user == None:
+            flag = True   
+            user = request.user 
         form = ModuleOneForm2(request.POST)                
         #valid form
         if form.is_valid():                    
             temp = createTempDict(request.POST)             
-            creatingOrUpdatingDrafts(temp,request.user)
-            return redirect('/moduleOne-3')
+            creatingOrUpdatingDrafts(temp,user)
+
+            if flag:
+                return redirect('/moduleOne-3')
+            else:
+                print("hey")
+                return redirect('parentsModuleOne3',id=StudentsInfo.objects.get(user=user).id)
+                    
         #invalid form
         else:                               
             return render(request,'registration_form/module_one.html',{'form':form})
 
-def moduleOne3(request):
+def moduleOne3(request,user):
     if(request.method=="GET"):
-        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=request.user)).exists(): 
-            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))            
+        if user==None:
+            user = request.user
+        if ModuleOne.objects.filter(student=StudentsInfo.objects.get(user=user)).exists(): 
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=user))            
             if draftForm.draft:
                 mod = ModuleOneForm3()
                 temp = {}
@@ -681,11 +712,15 @@ def moduleOne3(request):
             return render(request,'registration_form/module_one3.html',{'form':form})
     #POST
     else:
+        flag = False
+        if user == None:
+            flag = True   
+            user = request.user
         form = ModuleOneForm3(request.POST)                
         #valid form
         if form.is_valid():                    
             temp = createTempDict(request.POST)
-            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=request.user))
+            draftForm = ModuleOne.objects.get(student=StudentsInfo.objects.get(user=user))
             if draftForm.draft:
                 for name in ModuleOne._meta.get_fields():
                     name = name.column
@@ -699,7 +734,12 @@ def moduleOne3(request):
 
                 draftForm.draft = False
                 draftForm.save()
-            return redirect('/student_dashboard')
+                if flag:
+                    return redirect('/student_dashboard')
+                else:
+                    return redirect('/parent_dashboard')
+
+            
         #invalid form
         else:                               
             return render(request,'registration_form/module_one.html',{'form':form})
@@ -707,3 +747,21 @@ def moduleOne3(request):
 
 def forbidden(request):
     raise PermissionDenied
+
+def showStudent(request,id):
+    student = StudentsInfo.objects.get(pk=id)
+    encryptionHelper = EncryptionHelper()
+    return render(request,'registration_form/student_modules.html')
+
+def parentModuleOne(request,id):
+    user = StudentsInfo.objects.get(pk=id).user
+    return moduleOne(request,user)
+
+def parentModuleOne2(request,id):
+    user = StudentsInfo.objects.get(pk=id).user
+    return moduleOne2(request,user)
+  
+
+def parentModuleOne3(request,id):
+    user = StudentsInfo.objects.get(pk=id).user
+    return moduleOne3(request,user)
