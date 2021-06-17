@@ -44,6 +44,7 @@
             <div class="consent-card">
                 <form action="" method="POST">
                     {% csrf_token %}
+                    {{ form|as_crispy_errors }}
                     {{form.media}}
                     <h2>Parents Information</h2>
                     <br>

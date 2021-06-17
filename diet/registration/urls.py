@@ -31,5 +31,6 @@ urlpatterns = [
     path('parent_dashboard/<int:id>/moduleOne',views.parentModuleOne),
     path('parent_dashboard/<int:id>/moduleOne-2',views.parentModuleOne2,name='parentsModuleOne2'),
     path('parent_dashboard/<int:id>/moduleOne-3',views.parentModuleOne3,name='parentsModuleOne3'),
+    path('previous/',views.previous)
 ]
   

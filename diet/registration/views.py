@@ -1,5 +1,6 @@
 import io
 import ast
+from typing import NewType
 from django.contrib.auth.models import Group
 from django.db.models.expressions import F
 
@@ -51,7 +52,7 @@ def parents_info(request):
             request.session['data'] = request.POST
             return redirect('/students_info')
         else:            
-            print(form.errors.as_data() )
+            print(form.errors.as_data())
             return render(request,'registration_form/parents_info.html',{'form':form,'user_creation_form':user_creation_form})
     
 
@@ -617,15 +618,14 @@ def moduleOne(request,user=None):
             return render(request,'registration_form/module_one.html',{'form':form})
     #POST            
     else:  
-        
+                
         flag = False
         if user == None:
             flag = True   
             user = request.user  
-        form = ModuleOneForm(request.POST)                
-        #valid form
-        if form.is_valid(): 
-            # print(flag)                   
+        form = ModuleOneForm(request.POST)             
+        
+        if form.is_valid():
             temp = createTempDict(request.POST) 
 
             if not creatingOrUpdatingDrafts(temp,user):
@@ -637,14 +637,11 @@ def moduleOne(request,user=None):
 
             if flag:
                 return redirect('/moduleOne-2')
-            else:
-                print("hey")
+            else:                
                 return redirect('parentsModuleOne2',id=StudentsInfo.objects.get(user=user).id)
-                
-
-        #invalid form
-        else:                               
-            return render(request,'registration_form/module_one.html',{'form':form})
+        
+        else:
+            return render(request,'registration_form/module_one.html',{'form':form})    
 
         
 
@@ -676,22 +673,20 @@ def moduleOne2(request,user=None):
             flag = True   
             user = request.user 
         form = ModuleOneForm2(request.POST)                
-        #valid form
-        if form.is_valid():                    
+
+        if form.is_valid():
             temp = createTempDict(request.POST)             
             creatingOrUpdatingDrafts(temp,user)
 
             if flag:
                 return redirect('/moduleOne-3')
-            else:
-                print("hey")
-                return redirect('parentsModuleOne3',id=StudentsInfo.objects.get(user=user).id)
-                    
-        #invalid form
-        else:                               
-            return render(request,'registration_form/module_one.html',{'form':form})
+            else:                
+                return redirect('parentsModuleOne3',id=StudentsInfo.objects.get(user=user).id)                    
+        else:
+            return render(request,'registration_form/module_one2.html',{'form':form})
+            
 
-def moduleOne3(request,user):
+def moduleOne3(request,user=None):
     if(request.method=="GET"):
         if user==None:
             user = request.user
@@ -717,6 +712,7 @@ def moduleOne3(request,user):
             flag = True   
             user = request.user
         form = ModuleOneForm3(request.POST)                
+            
         #valid form
         if form.is_valid():                    
             temp = createTempDict(request.POST)
@@ -737,12 +733,10 @@ def moduleOne3(request,user):
                 if flag:
                     return redirect('/student_dashboard')
                 else:
-                    return redirect('/parent_dashboard')
-
-            
+                    return redirect('/parent_dashboard')            
         #invalid form
         else:                               
-            return render(request,'registration_form/module_one.html',{'form':form})
+            return render(request,'registration_form/module_one3.html',{'form':form})
             
 
 def forbidden(request):
@@ -765,3 +759,22 @@ def parentModuleOne2(request,id):
 def parentModuleOne3(request,id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne3(request,user)
+
+
+
+def previous(request):
+    link = request.META.get('HTTP_REFERER').split('/')
+    print(link)
+    if 'parent_dashboard' in link:
+        if link[-1] == 'moduleOne-2':
+            link[-1] = 'moduleOne'
+        elif link[-1] == 'moduleOne-3':
+            link[-1] = 'moduleOne-2' 
+    else:
+        if link[-2] == 'moduleOne-2':
+            link[-2] = 'moduleOne'
+        elif link[-2] == 'moduleOne-3':
+            link[-2] = 'moduleOne-2' 
+    newLink = '/'.join(link)
+    print(newLink)
+    return redirect(newLink)

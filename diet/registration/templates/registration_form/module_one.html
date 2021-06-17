@@ -33,71 +33,87 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">1. {{form.nutriGarden.label_tag}}</p>
+                            <p class="fw-bold mb-0">1. {{form.nutriGarden.label_tag}}
+                                {% if form.nutriGarden.errors %}
+                                <strong class="text-danger fw-bolder">
+                                    {{form.nutriGarden.errors.0}}
+                                </strong>
+                                {% endif %}
+                            </p>
                             {% for radio in form.nutriGarden %}
                                <div>
                                 {{ radio.tag }}
                                 <label for="id_nutriGarden_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
-                            {% if form.nutriGarden.errors %}
-                                <div class="alert alert-danger">{{form.nutriGarden.errors}}</div>
-                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">2. {{form.source_fruits_vegetables.label_tag}}</p>
+                            <p class="fw-bold mb-0">2. {{form.source_fruits_vegetables.label_tag}}
+                                {% if form.source_fruits_vegetables.errors %}
+                                <strong class="text-danger fw-bolder">
+                                    {{form.source_fruits_vegetables.errors.0}}
+                                </strong>
+                            {% endif %}
+                            </p>
                             {% for radio in form.source_fruits_vegetables %}
                                <div>
                                 {{ radio.tag }}
                                 <label for="id_source_fruits_vegetables_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
-                            {% if form.source_fruits_vegetables.errors %}
-                                <div class="alert alert-danger">{{form.source_fruits_vegetables.errors}}</div>
-                            {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">3. {{form.grow_own_food.label_tag}}</p>
+                            <p class="fw-bold mb-0">3. {{form.grow_own_food.label_tag}}
+                                {% if form.grow_own_food.errors %}
+                                <strong class="text-danger fw-bolder">
+                                    {{form.grow_own_food.errors.0}}
+                                </strong>
+                            {% endif %}
+                            </p>
                             {% for radio in form.grow_own_food %}
                                <div>
                                 {{ radio.tag }}
                                 <label for="id_grow_own_food_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                                </div>
                             {% endfor %}
-                            {% if form.grow_own_food.errors %}
-                                <div class="alert alert-danger">{{form.grow_own_food.errors}}</div>
-                            {% endif %}
+                            
                         </div>
 
 
                         <div class="col-md-12 mb-3">
                             <p class="fw-bold mb-0">4. {{form.if_grow_what.label_tag}}</p>
                             {{form.if_grow_what|as_crispy_field}}
-                            {% if form.if_grow_what.errors %}
-                                <div class="alert alert-danger">{{form.if_grow_what.errors}}</div>
-                            {% endif %}
                         </div>
 
 
 
                         <div class="col-md-12 mb-3 form-group">
-                            <p class="fw-bold mb-0">5. {{form.reason_gardening.label_tag}}</p>
+                            <p class="fw-bold mb-0">5. {{form.reason_gardening.label_tag}}
+                            {% if form.reason_gardening.errors %}
+                                <strong class="text-danger fw-bolder">
+                                    {{form.reason_gardening.errors.0}}
+                                </strong>
+                            {% endif %}
+                            </p>
                             {% for radio in form.reason_gardening %}
                                <div>
                                 {{ radio.tag }}
-                                <label for="id_reason_gardening_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_reason_gardening_{{ forloop.counter0 }}">{{ radio.choice_label }}</label> 
                                </div>
                             {% endfor %}
-                            {% if form.reason_gardening.errors %}
-                                <div class="alert alert-danger">{{form.reason_gardening.errors}}</div>
-                            {% endif %}
                         </div>
 
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">6. {{form.healthy_diet.label_tag}}</p>
+                            <p class="fw-bold mb-0">6. {{form.healthy_diet.label_tag}}
+                                {% if form.healthy_diet.errors %}
+                                <strong class="text-danger fw-bolder">
+                                    {{form.healthy_diet.errors.0}}
+                                </strong>
+                            {% endif %}
+                            </p>
                             {% for radio in form.healthy_diet %}
                                <div>
                                 {{ radio.tag }}
@@ -108,7 +124,13 @@
 
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">7. {{form.imp_nutrients.label_tag}}</p>
+                            <p class="fw-bold mb-0">7. {{form.imp_nutrients.label_tag}}
+                                {% if form.imp_nutrients.errors %}
+                                <strong class="text-danger fw-bolder">
+                                    {{form.imp_nutrients.errors.0}}
+                                </strong>
+                            {% endif %}
+                            </p>
                             {% for radio in form.imp_nutrients %}
                                <div>
                                 {{ radio.tag }}
