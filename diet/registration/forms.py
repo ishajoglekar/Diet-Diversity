@@ -34,12 +34,11 @@ class ParentsInfoForm(ModelForm):
 
     def clean(self):
         super(ParentsInfoForm, self).clean()
-
-        name = self.cleaned_data.get('name')
-        # print(name)
-        if not name:
-            self.add_error('name','Name is a required Field')
-        
+        for field in self.fields:
+            print(field)
+            if not self.cleaned_data[field]:
+            #   self.add_error(field,'Required')  
+                raise ValidationError('Required')
         return self.cleaned_data
 
 class StudentsInfoForm(ModelForm):
@@ -194,10 +193,12 @@ class ModuleOneForm(forms.ModelForm):
     imp_nutrients = forms.ChoiceField(label = ("Which of the following nutrients is important for body, cell, and muscle growth and repair?"),choices=imp_nutrients_choices,widget=forms.RadioSelect(),required=False)
     
 
-    # def clean(self):
-    #     print(self.cleaned_data['grow_own_food']):
-    #         self.add_error('grow_own_food','REQUEIRED')
-    #     return self.cleaned_data
+    def clean(self):
+        for field in self.fields:
+            print(field)
+            if not self.cleaned_data[field]:
+              self.add_error(field,'Required')  
+        return self.cleaned_data
 
 
 
@@ -263,6 +264,11 @@ class ModuleOneForm2(forms.ModelForm):
     microgreen_example= forms.ChoiceField(label = ("Examples of Microgrens?"),choices=microgreen_example_choices, widget= forms.RadioSelect(),required=False)
     harvestdays_microgreen= forms.ChoiceField(label = ("How many days does it take to harvest microgreens"),choices=harvestdays_microgreen_choices, widget= forms.RadioSelect(),required=False)
 
+    def clean(self):
+        for field in self.fields:
+            if not self.cleaned_data[field]:
+              self.add_error(field,'Required')  
+        return self.cleaned_data
 
 class ModuleOneForm3(forms.ModelForm):
     class Meta:
@@ -320,3 +326,9 @@ class ModuleOneForm3(forms.ModelForm):
     soaking_time_seeds = forms.ChoiceField(label = ("How many hours should we soak the seeds in water?"),choices=soaking_time_seeds_choices, widget= forms.RadioSelect(),required=False)
     microgreen_watering = forms.ChoiceField(label = ("How many times should microgreens be watered to keep the seed/plant moist?"),choices=microgreen_watering_choices, widget= forms.RadioSelect(),required=False)
     microgreen_use = forms.ChoiceField(label = ("How can we use a microgreen?"),choices=microgreen_use_choices, widget= forms.RadioSelect(),required=False)
+
+    def clean(self):
+        for field in self.fields:
+            if not self.cleaned_data[field]:
+              self.add_error(field,'Required')  
+        return self.cleaned_data
