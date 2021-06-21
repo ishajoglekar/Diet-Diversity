@@ -599,8 +599,7 @@ def draft(request):
  
 
 def moduleOne(request,user=None):
-    if(request.method=="GET"):
-        print(user)
+    if(request.method=="GET"):        
         if user==None:
             user = request.user
 
@@ -619,7 +618,9 @@ def moduleOne(request,user=None):
                                     
                 form = ModuleOneForm(temp)                           
                 return render(request,'registration_form/module_one.html',{'form':form})
-            #new form
+            else:
+                return redirect('/404notFound')            
+        #new form
         else:            
             form = ModuleOneForm()
             return render(request,'registration_form/module_one.html',{'form':form})
@@ -669,7 +670,9 @@ def moduleOne2(request,user=None):
         
                 form = ModuleOneForm2(temp)                           
                 return render(request,'registration_form/module_one2.html',{'form':form})
-            #new form
+            else:
+                return redirect('/404notFound')            
+        #new form
         else:            
             form = ModuleOneForm2()
             return render(request,'registration_form/module_one2.html',{'form':form})
@@ -708,7 +711,9 @@ def moduleOne3(request,user=None):
                         temp[name] = getattr(draftForm, name) or None
                 form = ModuleOneForm3(temp)                           
                 return render(request,'registration_form/module_one3.html',{'form':form})
-            #new form
+            else:
+                return redirect('/404notFound')            
+        #new form
         else:            
             form = ModuleOneForm3()
             return render(request,'registration_form/module_one3.html',{'form':form})
@@ -785,3 +790,6 @@ def previous(request):
     newLink = '/'.join(link)
     print(newLink)
     return redirect(newLink)
+
+def unmatched(request):
+    return HttpResponse("<h1>404 Page Not Found</h1>")
