@@ -617,9 +617,8 @@ def moduleOne(request,user=None):
                             temp[name] = getattr(draftForm, name)
                                     
                 form = ModuleOneForm(temp)                           
-                return render(request,'registration_form/module_one.html',{'form':form})
-            else:
-                return redirect('/404notFound')            
+                return render(requeft,'registration_form/module_one.html',{'form':form})
+                      
         #new form
         else:            
             form = ModuleOneForm()
@@ -670,8 +669,7 @@ def moduleOne2(request,user=None):
         
                 form = ModuleOneForm2(temp)                           
                 return render(request,'registration_form/module_one2.html',{'form':form})
-            else:
-                return redirect('/404notFound')            
+          
         #new form
         else:            
             form = ModuleOneForm2()
@@ -793,3 +791,6 @@ def previous(request):
 
 def unmatched(request):
     return HttpResponse("<h1>404 Page Not Found</h1>")
+    
+def manageForms(request):
+    return render(request,'registration_form/manage_forms_teacher.html')
