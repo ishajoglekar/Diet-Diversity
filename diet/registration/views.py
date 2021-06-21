@@ -129,7 +129,7 @@ def loginU(request):
                 elif grp_name == 'Teachers':
                     return redirect('/teacher_dashboard')
             else:
-                messages.error(request, 'User does not belong to select group')
+                messages.error(request, 'User does not belong to selected group')
                 return render(request,'registration_form/login.html',{'form':form})
         else:
             messages.error(request, 'Invalid credentials')
@@ -339,7 +339,7 @@ def getTemplate(request):
     sampleParentData =["john@gmail.com","John Doe","Male","29","Mumbai","400001","5","2","Mumbai","Maharashtra","BTech","Engineer","Hindu","Nuclear"]
 
 
-    sampleStudentData =["Jane Doe","Mumbai","1234","Female",date.today().strftime("%d/%m/%Y"),"K.J Somaiya School","john@gmail.com"]
+    sampleStudentData =["Jane Doe","Mumbai","1234","Female",date.today().strftime("%d-%m-%Y"),"K.J Somaiya School","john@gmail.com"]
     row_num = 0    
 
     
