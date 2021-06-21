@@ -1,5 +1,8 @@
-from django.urls import path  
+from django.urls import path
+from django.conf.urls import url
+from django.views.generic.base import RedirectView  
 from registration import views  
+
 urlpatterns = [      
     path('',views.loginU),
     # path('submit',views.show),
@@ -31,6 +34,9 @@ urlpatterns = [
     path('parent_dashboard/<int:id>/moduleOne',views.parentModuleOne),
     path('parent_dashboard/<int:id>/moduleOne-2',views.parentModuleOne2,name='parentsModuleOne2'),
     path('parent_dashboard/<int:id>/moduleOne-3',views.parentModuleOne3,name='parentsModuleOne3'),
-    path('previous/',views.previous)
+    path('previous/',views.previous),
+    path('404notFound/',views.unmatched),
+    # path(r'*', 'views.unmatched'),
+    url(r'^.*$', RedirectView.as_view(url='/404notFound/', permanent=False), name='index')
 ]
   

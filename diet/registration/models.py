@@ -140,6 +140,18 @@ class FirstModule(models.Model):
     food = models.CharField(max_length=255)
     drinks = models.CharField(max_length=255)
 
+class Form(models.Model):
+    name = models.CharField(max_length=255)
+
+class FormDetails(models.Model):
+    form = models.ForeignKey(Form,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherInCharge,on_delete=models.CASCADE)
+    open = models.BooleanField()
+    pre = models.BooleanField()
+    start_timestamp = models.DateTimeField()
+    end_timestamp = models.DateTimeField()
+
+
 class ModuleOne(models.Model):
     student = models.ForeignKey(StudentsInfo,on_delete=models.CASCADE)
     draft = models.BooleanField()
@@ -168,5 +180,5 @@ class ModuleOne(models.Model):
     soaking_time_seeds =  models.CharField(max_length=255,null=True)
     microgreen_watering = models.CharField(max_length=255,null=True)
     microgreen_use =  models.CharField(max_length=255,null=True)
-
+    submission_timestamp = models.DateTimeField(auto_now_add=True)
 

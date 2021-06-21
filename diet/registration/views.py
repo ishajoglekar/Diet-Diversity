@@ -568,32 +568,38 @@ def creatingOrUpdatingDrafts(temp,user):
         return False
 
 def draft(request):
-    module = request.META.get('HTTP_REFERER').split('/')[-2]    
+    if 'parent_dashboard' in request.META.get('HTTP_REFERER').split('/'):
+        module = request.META.get('HTTP_REFERER').split('/')[-1]
+        id =  request.META.get('HTTP_REFERER').split('/')[-2]    
+        user = StudentsInfo.objects.get(pk=id).user   
+    else:
+        module = request.META.get('HTTP_REFERER').split('/')[-2]  
+        user = request.user  
+
     #1st Page
     if module=="moduleOne":         
         #for removing csrf field 
         temp = createTempDict(request.POST)  
-        #checking if draft exists
-        if not creatingOrUpdatingDrafts(temp,request.user):
+        #checking if draft exists    
+        if not creatingOrUpdatingDrafts(temp,user):
             #creating new record
             form = ModuleOne(**temp)
-            form.student = StudentsInfo.objects.get(user=request.user)
+            form.student = StudentsInfo.objects.get(user=user)
             form.draft = True
             form.save()
     #2nd Page
     elif module=="moduleOne-2":
         temp = createTempDict(request.POST)  
-        creatingOrUpdatingDrafts(temp,request.user)
+        creatingOrUpdatingDrafts(temp,user)
     #3rd Page
     elif module=="moduleOne-3":
         temp = createTempDict(request.POST)             
-        creatingOrUpdatingDrafts(temp,request.user)
+        creatingOrUpdatingDrafts(temp,user)
     return redirect(request.META.get('HTTP_REFERER'))
-
+ 
 
 def moduleOne(request,user=None):
-    if(request.method=="GET"):
-        print(user)
+    if(request.method=="GET"):        
         if user==None:
             user = request.user
 
@@ -612,7 +618,9 @@ def moduleOne(request,user=None):
                                     
                 form = ModuleOneForm(temp)                           
                 return render(request,'registration_form/module_one.html',{'form':form})
-            #new form
+            else:
+                return redirect('/404notFound')            
+        #new form
         else:            
             form = ModuleOneForm()
             return render(request,'registration_form/module_one.html',{'form':form})
@@ -662,7 +670,9 @@ def moduleOne2(request,user=None):
         
                 form = ModuleOneForm2(temp)                           
                 return render(request,'registration_form/module_one2.html',{'form':form})
-            #new form
+            else:
+                return redirect('/404notFound')            
+        #new form
         else:            
             form = ModuleOneForm2()
             return render(request,'registration_form/module_one2.html',{'form':form})
@@ -701,7 +711,9 @@ def moduleOne3(request,user=None):
                         temp[name] = getattr(draftForm, name) or None
                 form = ModuleOneForm3(temp)                           
                 return render(request,'registration_form/module_one3.html',{'form':form})
-            #new form
+            else:
+                return redirect('/404notFound')            
+        #new form
         else:            
             form = ModuleOneForm3()
             return render(request,'registration_form/module_one3.html',{'form':form})
@@ -778,3 +790,6 @@ def previous(request):
     newLink = '/'.join(link)
     print(newLink)
     return redirect(newLink)
+
+def unmatched(request):
+    return HttpResponse("<h1>404 Page Not Found</h1>")
