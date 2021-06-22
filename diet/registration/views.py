@@ -20,7 +20,7 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 
 from registration.models import *
-from .forms import ConsentForm, ModuleOneForm,ModuleOneForm2,ModuleOneForm3,ParentsInfoForm, StudentsInfoForm,CustomAuthenticationForm,FirstModuleForm
+from .forms import *
 from shared.encryption import EncryptionHelper
 
 
@@ -793,4 +793,68 @@ def unmatched(request):
     return HttpResponse("<h1>404 Page Not Found</h1>")
     
 def manageForms(request):
-    return render(request,'registration_form/manage_forms_teacher.html')
+    if request.method == "GET":
+        moduleOne={}
+        moduleTwo={}
+        moduleThree={}
+        form = Form.objects.get(name='moduleOne')
+        teacher = TeacherInCharge.objects.get(user=request.user)
+        if FormDetails.objects.filter(form=form,teacher=teacher).exists():
+
+            form = FormDetails.objects.filter(form=form,teacher=teacher,open=True).order_by('-start_timestamp').first()            
+            if form:
+                if form.pre:
+                    moduleOne['pre'] = True
+                    moduleOne['post'] = False
+
+                else:
+                    moduleOne['post'] = True
+                    moduleOne['pre'] = False
+
+        return render(request,'registration_form/manage_forms_teacher.html',{'moduleOne': moduleOne, 'moduleTwo':moduleTwo, 'moduleThree':moduleThree})
+    else:
+        
+        if 'moduleOne' in request.POST:
+            module_one_pre = request.POST.get('module_one_pre', False)
+            module_one_post = request.POST.get('module_one_post', False)            
+            if module_one_pre == 'on' and module_one_post == 'on':                
+                messages.error(request, 'Cannot select both PreTest and PostTest')
+
+            form = Form.objects.get(name='moduleOne')
+            teacher = TeacherInCharge.objects.get(user=request.user)
+
+            if module_one_pre=='on':
+                if not FormDetails.objects.filter(form=form,teacher=teacher,pre=True,open=True).exists():
+                    update = FormDetails(form=form,teacher=teacher,pre=True,open=True,start_timestamp=datetime.datetime.now())
+                    update.save()
+            else:                
+                if FormDetails.objects.filter(form=form,teacher=teacher,pre=True,open=True).exists():                    
+                    update = FormDetails.objects.filter(form=form,teacher=teacher,pre=True,open=True).first()                    
+                    update.open = False
+                    update.end_timestamp = datetime.datetime.now()
+                    update.save()
+
+            if module_one_post=='on':
+                if not FormDetails.objects.filter(form=form,teacher=teacher,pre=False,open=True).exists():
+                    update = FormDetails(form=form,teacher=teacher,pre=False,open=True,start_timestamp=datetime.datetime.now())
+                    update.save()
+            else:                            
+                if FormDetails.objects.filter(form=form,teacher=teacher,pre=False,open=True).exists():                    
+                    update = FormDetails.objects.filter(form=form,teacher=teacher,pre=False,open=True).first()                    
+                    update.open = False
+                    update.end_timestamp = datetime.datetime.now()
+                    update.save()
+
+        
+        module_two_pre = request.POST.get('module_two_pre', False)
+        module_two_post = request.POST.get('module_two_post', False)
+        module_three_pre = request.POST.get('module_three_pre', False)
+        module_three_post = request.POST.get('module_three_post', False)
+            
+        # if module_one_pre == module_one_post or module_two_pre == module_two_post or module_three_pre == module_three_post:
+            
+        
+        # FormDetails.objects.filter(form= )
+
+        return redirect('/manage-forms')
+        

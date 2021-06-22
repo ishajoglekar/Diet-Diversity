@@ -24,59 +24,107 @@
     }
 </style>
 <div class="container">
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">PreTest Status</th>
-        <th scope="col">PostTest Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>Module One</td>
-        <td><div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-          </div></td>
-        <td>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">      
+    {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-danger" role="alert">
+          {{message}}
+      </div>
+    {% endfor %}
+  {% endif %} 
+  <div id="accordion">
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <h5 class="mb-0">
+          <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Module One
+          </button>
+        </h5>
+      </div>
+      <form action="" method="post">
+        {% csrf_token %}
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body d-flex justify-content-around">
+            <div class="d-flex">
+              <strong>PreTest Status</strong>
+              <div class="form-check form-switch ml-3">                
+                <input class="form-check-input" type="checkbox" name="module_one_pre" {%if moduleOne.pre%} checked {% endif %} {%if moduleOne.post%} disabled {% endif %}> 
               </div>
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Module Two</td>
-        <td><div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-          </div></td>
-        <td>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">      
+            </div>
+            <div class="d-flex">
+              <strong>PostTest Status</strong>
+              <div class="form-check form-switch ml-3">
+                <input class="form-check-input" type="checkbox" name="module_one_post" {%if moduleOne.post%} checked {% endif %} {%if moduleOne.pre%} disabled {% endif %}>
               </div>
-        </td>
-      </tr>
-
-      <tr>
-        <th scope="row">3</th>
-        <td>Module Three</td>
-        <td><div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-          </div></td>
-        <td>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">      
+            </div>
+            <div class="d-flex">
+              <input type="submit" class="btn btn-success justify-content-around" name="moduleOne" value="Update Changes">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingTwo">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            Module Two
+          </button>
+        </h5>
+      </div>
+      <form action="" method="post">
+        {% csrf_token %}
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+          <div class="card-body d-flex justify-content-around">
+            <div class="d-flex">
+              <strong>PreTest Status</strong>
+              <div class="form-check form-switch ml-3">
+                <input class="form-check-input" type="checkbox" name="module_two_pre">
               </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
- <div class="d-flex flex-row-reverse">
-    
-    <input type="submit" class="btn btn-success justify-content-around" value="Update Changes">
- </div>
+            </div>
+            <div class="d-flex">
+              <strong>PostTest Status</strong>
+              <div class="form-check form-switch ml-3">
+                <input class="form-check-input" type="checkbox" name="module_two_post">
+              </div>
+            </div>
+            <div class="d-flex">
+              <input type="submit" class="btn btn-success justify-content-around" name="moduleTwo" value="Update Changes">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingThree">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            Module Three
+          </button>
+        </h5>
+      </div>
+      <form action="" method="post">
+        {% csrf_token %}
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+          <div class="card-body d-flex justify-content-around">
+            <div class="d-flex">
+              <strong>PreTest Status</strong>
+              <div class="form-check form-switch ml-3">
+                <input class="form-check-input" type="checkbox" name="module_three_pre">
+              </div>
+            </div>
+            <div class="d-flex">
+              <strong>PostTest Status</strong>
+              <div class="form-check form-switch ml-3">
+                <input class="form-check-input" type="checkbox" name="module_three_post">
+              </div>
+            </div>
+            <div class="d-flex">
+              <input type="submit" class="btn btn-success justify-content-around" name="moduleThree" value="Update Changes">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>    
 </div>
 {% endblock %}
