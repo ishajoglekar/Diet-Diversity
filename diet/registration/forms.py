@@ -6,7 +6,6 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
-
 from .models import ParentsInfo, StudentsInfo, ModuleOne,FirstModule
 
 class ConsentForm(forms.Form):
@@ -332,3 +331,5 @@ class ModuleOneForm3(forms.ModelForm):
             if not self.cleaned_data[field]:
               self.add_error(field,'Required')  
         return self.cleaned_data
+
+

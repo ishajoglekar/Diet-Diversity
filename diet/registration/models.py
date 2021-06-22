@@ -149,7 +149,7 @@ class FormDetails(models.Model):
     open = models.BooleanField()
     pre = models.BooleanField()
     start_timestamp = models.DateTimeField()
-    end_timestamp = models.DateTimeField()
+    end_timestamp = models.DateTimeField(null=True)
 
 
 class ModuleOne(models.Model):
