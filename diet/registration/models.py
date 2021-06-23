@@ -154,6 +154,7 @@ class FormDetails(models.Model):
 
 class ModuleOne(models.Model):
     student = models.ForeignKey(StudentsInfo,on_delete=models.CASCADE)
+    pre = models.BooleanField()
     draft = models.BooleanField()
     nutriGarden = models.CharField(max_length=10,null=True)
     source_fruits_vegetables = models.CharField(max_length=255,null=True)
@@ -180,5 +181,5 @@ class ModuleOne(models.Model):
     soaking_time_seeds =  models.CharField(max_length=255,null=True)
     microgreen_watering = models.CharField(max_length=255,null=True)
     microgreen_use =  models.CharField(max_length=255,null=True)
-    submission_timestamp = models.DateTimeField(auto_now_add=True)
+    submission_timestamp = models.DateTimeField(null=True)
 
