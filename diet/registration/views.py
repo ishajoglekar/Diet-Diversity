@@ -516,18 +516,18 @@ def teacher_dashboard(request):
     total_students = teacher.studentsinfo_set.all()
     # print(students)
     result = []
-    for student in total_students:
-        if ModuleOne.objects.filter(student=student).exists():
-            draftForm = ModuleOne.objects.get(student=student)            
-            if not draftForm.draft:
-                result.append(student)
+    # for student in total_students:
+        # if ModuleOne.objects.filter(student=student).exists():
+            # draftForm = ModuleOne.objects.get(student=student)            
+            # if not draftForm.draft:
+            #     result.append(student)
 
-    finalResult = []
+    # finalResult = []
         
-    finalResult.append(len(result))
-    finalResult.append(len(total_students)-len(result))
-
-    return render(request,'registration_form/teacher_dashboard.html',{'result':result,'total_students':total_students,'finalResult':finalResult,'labels':['Filled','Not Filled']})
+    # finalResult.append(len(result))
+    # finalResult.append(len(total_students)-len(result))
+    return render(request,'registration_form/teacher_dashboard.html')
+    # return render(request,'registration_form/teacher_dashboard.html',{'result':result,'total_students':total_students,'finalResult':finalResult,'labels':['Filled','Not Filled']})
 
 #user to check if a user belongs to a group
 def is_member(user,grp):
@@ -863,6 +863,8 @@ def manageForms(request):
             module_one_post = request.POST.get('module_one_post', False)            
             if module_one_pre == 'on' and module_one_post == 'on':                
                 messages.error(request, 'Cannot select both PreTest and PostTest')
+                return redirect('/manage-forms')
+
 
             form = Form.objects.get(name='moduleOne')
             teacher = TeacherInCharge.objects.get(user=request.user)
