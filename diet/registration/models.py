@@ -143,6 +143,9 @@ class FirstModule(models.Model):
 class Form(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name.capitalize()
+
 class FormDetails(models.Model):
     form = models.ForeignKey(Form,on_delete=models.CASCADE)
     teacher = models.ForeignKey(TeacherInCharge,on_delete=models.CASCADE)
