@@ -5,8 +5,10 @@ register = template.Library()
 
 @register.filter
 @stringfilter
+#used to display labels for radio button with images
 def getValue(value):
     #removing  /
+
     value = value.split('/')[-1]
     
     #removing .

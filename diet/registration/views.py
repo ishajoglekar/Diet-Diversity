@@ -24,7 +24,6 @@ from registration.models import *
 from .forms import *
 from shared.encryption import EncryptionHelper
 
-
 def is_teacher(user):
     return user.groups.filter(name='Teachers').exists()
 
@@ -515,18 +514,33 @@ def teacher_dashboard(request):
     teacher = TeacherInCharge.objects.get(user=request.user)
     total_students = teacher.studentsinfo_set.all()
     # print(students)
-    result = []
-    # for student in total_students:
-        # if ModuleOne.objects.filter(student=student).exists():
-            # draftForm = ModuleOne.objects.get(student=student)            
-            # if not draftForm.draft:
-            #     result.append(student)
+    results = []
+    total_sessions = FormDetails.objects.filter(teacher=teacher,open=False)
 
-    # finalResult = []
-        
+    for session in total_sessions:
+        temp_list = [session.form,session.start_timestamp,session.end_timestamp]
+        if session.pre:
+            temp_list.append("Pre Test")
+        else:
+            temp_list.append("Post Test")
+        count = 0
+        for student in total_students:
+            if ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).exists():
+                draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).first()
+                if not draftForm.draft:
+                    count += 1
+                    
+        temp_list.append(count)
+        temp_list.append(len(total_students))
+        temp_list.append(session.id)
+        print(temp_list)
+        results.append(temp_list)
+    # finalResults = []
+    
+    print(results)
     # finalResult.append(len(result))
     # finalResult.append(len(total_students)-len(result))
-    return render(request,'registration_form/teacher_dashboard.html')
+    return render(request,'registration_form/teacher_dashboard.html',{'results':results})
     # return render(request,'registration_form/teacher_dashboard.html',{'result':result,'total_students':total_students,'finalResult':finalResult,'labels':['Filled','Not Filled']})
 
 #user to check if a user belongs to a group
@@ -903,4 +917,50 @@ def manageForms(request):
         # FormDetails.objects.filter(form= )
 
         return redirect('/manage-forms')
+
+def getFormDetails(request,id):
+    session = FormDetails.objects.get(pk=id)
+    print(session.start_timestamp)
+    teacher = session.teacher
+    total_students = teacher.studentsinfo_set.all()
+    # print(students)
+    filled_students = []
+    not_filled_students = []
+    encryptionHelper = EncryptionHelper()
+    temp_list = [session.form,session.start_timestamp,session.end_timestamp]
+    if session.pre:
+        temp_list.append("Pre Test")
+    else:
+        temp_list.append("Post Test")
+    count = 0
+    for student in total_students:
+        temp = []
+        # print(total_students)
+        # print(ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).exists())
+        if ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).exists():
+            draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).first()
+            print(draftForm)
+            
+            if not draftForm.draft:
+                count += 1
+                temp.append(encryptionHelper.decrypt(student.name))
+                temp.append(draftForm.submission_timestamp)
+                filled_students.append(temp)
+
+            else:
+                temp.append(encryptionHelper.decrypt(student.name))
+                temp.append('-')
+                not_filled_students.append(temp)
+        else:
+            temp.append(encryptionHelper.decrypt(student.name))
+            temp.append('-')
+            not_filled_students.append(temp)
+        
+                    
+    temp_list.append(count)
+    temp_list.append(len(total_students))
+    print(filled_students)
+    
+    return render(request,'registration_form/teacher_dashboard_getDetails.html',{'result':temp_list,'filled_students':filled_students,'not_filled_students':not_filled_students})
+    
         

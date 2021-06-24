@@ -20,6 +20,7 @@ urlpatterns = [
     path('parent_dashboard/',views.dashboard),
     path('student_dashboard/',views.student_dashboard),
     path('teacher_dashboard/',views.teacher_dashboard),
+    path('teacher_dashboard/<int:id>/',views.getFormDetails),
     path('logout/',views.logoutU),
     path('addStudentForm/',views.addStudentForm),
     # path('firstModule/',views.getFirstModule),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('parent_dashboard/<int:id>/moduleOne-3',views.parentModuleOne3,name='parentsModuleOne3'),
     path('previous/',views.previous),
     path('manage-forms/',views.manageForms),
+
     # path('404notFound/',views.unmatched),
     # path(r'*', 'views.unmatched'),
     # url(r'^.*$', RedirectView.as_view(url='/404notFound/', permanent=False), name='index')
