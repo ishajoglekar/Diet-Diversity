@@ -18,18 +18,7 @@ from shared.encryption import EncryptionHelper
 #                 # )
 #                 return errors
 
-#     def validateRequired(value):
-#         errors = []
-#         print(value)
-#         if isinstance(value,list):
-#             if not value:
-#                 errors.append('required field')
-#                 return errors
-#         elif not value.strip():
-#             errors.append('required field')
-#             print("Required Field")
-#             return errors
-       
+
 
 
 class Occupation(models.Model):

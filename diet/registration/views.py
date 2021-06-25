@@ -24,6 +24,17 @@ from registration.models import *
 from .forms import *
 from shared.encryption import EncryptionHelper
 
+#user to check if a user belongs to a group
+def is_member(user,grp):
+    grp = Group.objects.get(pk=grp)
+    return user.groups.filter(name=grp).exists()
+
+def is_student(user):
+    return user.groups.filter(name='Students').exists()
+
+def is_parent(user):
+    return user.groups.filter(name='Parents').exists()
+
 def is_teacher(user):
     return user.groups.filter(name='Teachers').exists()
 
@@ -51,8 +62,7 @@ def parents_info(request):
         if form.is_valid() and user_creation_form.is_valid():            
             request.session['data'] = request.POST
             return redirect('/students_info')
-        else:            
-            print(form.errors.as_data())
+        else:                        
             return render(request,'registration_form/parents_info.html',{'form':form,'user_creation_form':user_creation_form})
     
 
@@ -136,6 +146,7 @@ def loginU(request):
             return render(request,'registration_form/login.html',{'form':form})
 
 @login_required(login_url='/login')
+@user_passes_test(is_parent,login_url='/forbidden')
 def dashboard(request):
     if request.method == "GET":
         students = ParentsInfo.objects.filter(user= request.user).first().studentsinfo_set.all()
@@ -151,6 +162,7 @@ def logoutU(request):
     return redirect('/login')
 
 @login_required(login_url='/login')             
+@user_passes_test(is_parent,login_url='/forbidden')
 def addStudentForm(request):
     if request.method == "GET":
         form = StudentsInfoForm()
@@ -326,6 +338,7 @@ def bulkRegister(request):
 
 
 @login_required(login_url='/login')
+@user_passes_test(is_teacher,login_url='/forbidden')
 def getTemplate(request):
     output = io.BytesIO()
     
@@ -365,6 +378,7 @@ def getTemplate(request):
     return response  
 
 @login_required(login_url='/login')
+@user_passes_test(is_teacher,login_url='/forbidden')
 def downloadData(request):
 
     output = io.BytesIO()
@@ -504,20 +518,23 @@ def downloadData(request):
 #     if(request.method == "GET"):
 #         form = FirstModuleForm()
 #         return render(request,'registration_form/first_module_second.html',{'form':form})
-#     else:        
-#         print(','.join(request.POST.getlist('drinks')))
 
+
+@login_required(login_url='/login')
+@user_passes_test(is_student,login_url='/forbidden')
 def student_dashboard(request):
     return render(request,'registration_form/student_dashboard.html')
 
+
+@login_required(login_url='/login')
+@user_passes_test(is_teacher,login_url='/forbidden')
 def teacher_dashboard(request):
     teacher = TeacherInCharge.objects.get(user=request.user)
     total_students = teacher.studentsinfo_set.all()
-    # print(students)
     results = []
-    total_sessions = FormDetails.objects.filter(teacher=teacher,open=False)
+    closed_sessions = FormDetails.objects.filter(teacher=teacher,open=False)
 
-    for session in total_sessions:
+    for session in closed_sessions:
         temp_list = [session.form,session.start_timestamp,session.end_timestamp]
         if session.pre:
             temp_list.append("Pre Test")
@@ -533,25 +550,29 @@ def teacher_dashboard(request):
         temp_list.append(count)
         temp_list.append(len(total_students))
         temp_list.append(session.id)
-        print(temp_list)
         results.append(temp_list)
-    # finalResults = []
-    
-    print(results)
-    # finalResult.append(len(result))
-    # finalResult.append(len(total_students)-len(result))
-    return render(request,'registration_form/teacher_dashboard.html',{'results':results})
-    # return render(request,'registration_form/teacher_dashboard.html',{'result':result,'total_students':total_students,'finalResult':finalResult,'labels':['Filled','Not Filled']})
 
-#user to check if a user belongs to a group
-def is_member(user,grp):
-    grp = Group.objects.get(pk=grp)
-    return user.groups.filter(name=grp).exists()
+    open_sessions = FormDetails.objects.filter(teacher=teacher,open=True)
+    results2 = []    
+    for session in open_sessions:
+        temp_list = [session.form,session.start_timestamp]
+        if session.pre:
+            temp_list.append("Pre Test")
+        else:
+            temp_list.append("Post Test")
+        count = 0
+        for student in total_students:
+            if ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp).exists():
+                draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp).first()
+                if not draftForm.draft:
+                    count += 1
+                    
+        temp_list.append(count)
+        temp_list.append(len(total_students))
+        temp_list.append(session.id)
+        results2.append(temp_list)
 
-# def test(request):
-#     str = "DSRV"
-#     school = School.objects.filter(name__icontains = str).first()
-
+    return render(request,'registration_form/teacher_dashboard.html',{'results':results,'results2':results2})
 
 
 def createTempDict(postData):
@@ -563,6 +584,7 @@ def createTempDict(postData):
                 temp[key] = postData[key]
     del temp['csrfmiddlewaretoken'] 
     return temp
+
 
 def creatingOrUpdatingDrafts(temp,user):
     student = StudentsInfo.objects.get(user=user)
@@ -586,6 +608,8 @@ def creatingOrUpdatingDrafts(temp,user):
     else:
         return False
 
+@login_required(login_url='/login')
+@user_passes_test(is_student,login_url='/forbidden')
 def draft(request):
     if 'parent_dashboard' in request.META.get('HTTP_REFERER').split('/'):
         module = request.META.get('HTTP_REFERER').split('/')[-1]
@@ -625,7 +649,8 @@ def getFormType(moduleType):
     formType = FormDetails.objects.filter(form=module,open=True).first()
     return 'PreTest' if formType.pre else 'PostTest'
 
-
+@login_required(login_url='/login')
+@user_passes_test(is_student,login_url='/forbidden')
 @isActive('moduleOne','student')
 def moduleOne(request,user=None):
     if(request.method=="GET"):                      
@@ -651,7 +676,7 @@ def moduleOne(request,user=None):
                 formPre = getFormType('moduleOne')        
                 return render(request,'registration_form/module_one.html',{'form':form,'formPre':formPre})
             else:
-                return redirect('/forbidden')
+                return redirect('/already_filled')
                         
         #new form
         else:            
@@ -690,9 +715,9 @@ def moduleOne(request,user=None):
             formPre = getFormType('moduleOne')
             return render(request,'registration_form/module_one.html',{'form':form,'formPre':formPre})    
 
-        
-
-
+@login_required(login_url='/login')     
+@user_passes_test(is_student,login_url='/forbidden')
+@isActive('moduleOne','student')
 def moduleOne2(request,user=None):
     if(request.method=="GET"):
         if user==None:
@@ -711,15 +736,15 @@ def moduleOne2(request,user=None):
                         temp[name] = getattr(draftForm, name) or None
         
                 form = ModuleOneForm2(temp)                           
-                formPre = getFormType('moduleOne')
-                print(formPre)
+                formPre = getFormType('moduleOne')                
                 return render(request,'registration_form/module_one2.html',{'form':form,'formPre':formPre})
+            else:
+                return redirect('/already_filled')
           
         #new form
         else:            
             form = ModuleOneForm2()
-            formPre = getFormType('moduleOne')
-            # print(formPre)
+            formPre = getFormType('moduleOne')            
             return render(request,'registration_form/module_one2.html',{'form':form,'formPre':formPre})
     #POST
     else:
@@ -740,8 +765,10 @@ def moduleOne2(request,user=None):
         else:
             formPre = getFormType('moduleOne')
             return render(request,'registration_form/module_one2.html',{'form':form,'formPre':'formPre'})
-            
 
+@login_required(login_url='/login')            
+@user_passes_test(is_student,login_url='/forbidden')
+@isActive('moduleOne','student')
 def moduleOne3(request,user=None):
     if(request.method=="GET"):
         if user==None:
@@ -762,7 +789,7 @@ def moduleOne3(request,user=None):
                 formPre = getFormType('moduleOne')
                 return render(request,'registration_form/module_one3.html',{'form':form,'formPre':formPre})
             else:
-                return redirect('/404notFound')            
+                return redirect('/already_filled')
         #new form
         else:            
             form = ModuleOneForm3()
@@ -809,30 +836,38 @@ def moduleOne3(request,user=None):
 def forbidden(request):
     raise PermissionDenied
 
+@login_required(login_url='/login')
+@user_passes_test(is_parent,login_url='/forbidden')
 def showStudent(request,id):
     student = StudentsInfo.objects.get(pk=id)
     encryptionHelper = EncryptionHelper()
     return render(request,'registration_form/student_modules.html')
 
+@login_required(login_url='/login')
+@user_passes_test(is_parent,login_url='/forbidden')
 @isActive('moduleOne','parent')
 def parentModuleOne(request,id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne(request,user)
 
+@login_required(login_url='/login')    
+@user_passes_test(is_parent,login_url='/forbidden')
+@isActive('moduleOne','parent')
 def parentModuleOne2(request,id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne2(request,user)
-  
 
+@login_required(login_url='/login')  
+@user_passes_test(is_parent,login_url='/forbidden')
+@isActive('moduleOne','parent')
 def parentModuleOne3(request,id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne3(request,user)
 
-
-
+@login_required(login_url='/login')
+@user_passes_test(is_student,login_url='/forbidden')
 def previous(request):
-    link = request.META.get('HTTP_REFERER').split('/')
-    print(link)
+    link = request.META.get('HTTP_REFERER').split('/')    
     if 'parent_dashboard' in link:
         if link[-1] == 'moduleOne-2':
             link[-1] = 'moduleOne'
@@ -844,12 +879,10 @@ def previous(request):
         elif link[-2] == 'moduleOne-3':
             link[-2] = 'moduleOne-2' 
     newLink = '/'.join(link)
-    print(newLink)
     return redirect(newLink)
 
-def unmatched(request):
-    return HttpResponse("<h1>404 Page Not Found</h1>")
-    
+@login_required(login_url='/login')
+@user_passes_test(is_teacher,login_url='/forbidden')
 def manageForms(request):
     if request.method == "GET":
         moduleOne={}
@@ -912,22 +945,27 @@ def manageForms(request):
         module_three_post = request.POST.get('module_three_post', False)
             
         # if module_one_pre == module_one_post or module_two_pre == module_two_post or module_three_pre == module_three_post:
-            
-        
         # FormDetails.objects.filter(form= )
-
         return redirect('/manage-forms')
 
+@login_required(login_url='/login')
+@user_passes_test(is_teacher,login_url='/forbidden')
 def getFormDetails(request,id):
     session = FormDetails.objects.get(pk=id)
-    print(session.start_timestamp)
+    print(session)
     teacher = session.teacher
     total_students = teacher.studentsinfo_set.all()
-    # print(students)
+    
     filled_students = []
     not_filled_students = []
     encryptionHelper = EncryptionHelper()
-    temp_list = [session.form,session.start_timestamp,session.end_timestamp]
+    open = True
+    if not session.open:
+        open = False
+        temp_list = [session.form,session.start_timestamp,session.end_timestamp]
+    else:
+        temp_list = [session.form,session.start_timestamp]
+
     if session.pre:
         temp_list.append("Pre Test")
     else:
@@ -935,32 +973,46 @@ def getFormDetails(request,id):
     count = 0
     for student in total_students:
         temp = []
-        # print(total_students)
-        # print(ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).exists())
-        if ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).exists():
-            draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).first()
-            print(draftForm)
-            
-            if not draftForm.draft:
-                count += 1
-                temp.append(encryptionHelper.decrypt(student.name))
-                temp.append(draftForm.submission_timestamp)
-                filled_students.append(temp)
+        if not session.open:
+            if ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).exists():
+                draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp,submission_timestamp__lte=session.end_timestamp).first()            
+                
+                if not draftForm.draft:
+                    count += 1
+                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(draftForm.submission_timestamp)
+                    filled_students.append(temp)
 
+                else:
+                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append('-')
+                    not_filled_students.append(temp)
             else:
                 temp.append(encryptionHelper.decrypt(student.name))
                 temp.append('-')
                 not_filled_students.append(temp)
+
         else:
-            temp.append(encryptionHelper.decrypt(student.name))
-            temp.append('-')
-            not_filled_students.append(temp)
-        
+            if ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp).exists():
+                draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=session.start_timestamp).first()            
+            
+                if not draftForm.draft:
+                    count += 1
+                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(draftForm.submission_timestamp)
+                    filled_students.append(temp)
+
+                else:
+                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append('-')
+                    not_filled_students.append(temp)
+            else:
+                temp.append(encryptionHelper.decrypt(student.name))
+                temp.append('-')
+                not_filled_students.append(temp)
+
                     
     temp_list.append(count)
-    temp_list.append(len(total_students))
-    print(filled_students)
+    temp_list.append(len(total_students))    
     
-    return render(request,'registration_form/teacher_dashboard_getDetails.html',{'result':temp_list,'filled_students':filled_students,'not_filled_students':not_filled_students})
-    
-        
+    return render(request,'registration_form/teacher_dashboard_getDetails.html',{'result':temp_list,'filled_students':filled_students,'not_filled_students':not_filled_students,'open':open})

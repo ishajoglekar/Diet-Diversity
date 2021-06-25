@@ -17,28 +17,13 @@
         
 {%block content%}
 
-<table class="table">
-  <thead>
-    <tr>
-      
-      <th scope="col">Form</th>
-      <th scope="col">Start Date</th>
-      <th scope="col">End Date</th>
-      <th scope="col">Type</th>
-      <th scope="col">No. of Filled forms</th>
-      <th scope="col">Total Students</th>
+{% if not open %}
+<h5>Form : {{result.0}} &nbsp&nbsp&nbsp&nbsp Start Date: {{result.1}} &nbsp&nbsp&nbsp&nbsp End Date: {{result.2}} &nbsp&nbsp&nbsp&nbsp Type: {{result.3}}</h5>
 
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-    {% for data in result %}    
-      <td>{{data}}</td>
-    {% endfor %}  
-  </tr>
+{% else %}
+<h5>Form : {{result.0}} &nbsp&nbsp&nbsp&nbsp Start Date: {{result.1}} &nbsp&nbsp&nbsp&nbsp End Date: Ongoing &nbsp&nbsp&nbsp&nbsp Type: {{result.2}}</h5>
 
-  </tbody>
-</table>
+{% endif %}
 
 <table class="table text-center">
   <thead>
@@ -48,9 +33,11 @@
     </tr>
   </thead>
   <tbody>
+    {% if filled_students%}
     <tr>
       <td class="text-center fw-bold" colspan="2">Students who have filled the Form</td>
     </tr>
+    {% endif %}
 
     {% for student in filled_students %}
     <tr>
