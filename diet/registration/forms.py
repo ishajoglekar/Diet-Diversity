@@ -34,7 +34,6 @@ class ParentsInfoForm(ModelForm):
     def clean(self):
         super(ParentsInfoForm, self).clean()
         for field in self.fields:
-            print(field)
             if not self.cleaned_data[field]:
             #   self.add_error(field,'Required')  
                 raise ValidationError('Required')
@@ -73,7 +72,6 @@ class StudentsInfoForm(ModelForm):
         super(StudentsInfoForm, self).clean()
 
         name = self.cleaned_data.get('name')
-        # print(name)
         if not name:
             self.add_error('name','Name is a required Field')
         
@@ -194,7 +192,6 @@ class ModuleOneForm(forms.ModelForm):
 
     def clean(self):
         for field in self.fields:
-            print(field)
             if not self.cleaned_data[field]:
               self.add_error(field,'Required')  
         return self.cleaned_data

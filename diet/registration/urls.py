@@ -2,6 +2,8 @@ from django.urls import path
 from django.conf.urls import url
 from django.views.generic.base import RedirectView  
 from registration import views  
+from django.views.generic.base import TemplateView
+
 
 urlpatterns = [      
     path('',views.loginU),
@@ -37,9 +39,7 @@ urlpatterns = [
     path('parent_dashboard/<int:id>/moduleOne-3',views.parentModuleOne3,name='parentsModuleOne3'),
     path('previous/',views.previous),
     path('manage-forms/',views.manageForms),
-
-    # path('404notFound/',views.unmatched),
-    # path(r'*', 'views.unmatched'),
-    # url(r'^.*$', RedirectView.as_view(url='/404notFound/', permanent=False), name='index')
+    url('already_filled/', TemplateView.as_view(template_name='registration_form/already_filled.html')),
+    url('form_closed/', TemplateView.as_view(template_name='registration_form/form_closed.html')),        
 ]
   
