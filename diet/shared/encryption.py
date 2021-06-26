@@ -15,5 +15,5 @@ class EncryptionHelper():
         encr = self.f.encrypt(stringBytes)
         return encr
     
-    def decrypt(self,data:bytes):        
-        return self.f.decrypt(data).decode('UTF-8')
+    def decrypt(self,data:bytes):   
+        return self.f.decrypt(b''+data).decode('UTF-8')
