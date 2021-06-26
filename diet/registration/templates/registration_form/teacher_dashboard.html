@@ -17,6 +17,7 @@
         
 {%block content%}
 
+{% if results2 %}
 <h3>Open Forms</h3>
 <table class="table">
   <thead>
@@ -45,9 +46,11 @@
   {% endfor %}
   </tbody>
 </table>
+{% endif %}
 
+{% if results %}
 <h3>Closed Forms</h3>
-<table style="width:100vw" class="table table-responsive overflow-auto">
+<table style="width:100vw" class="table overflow-auto">
   <thead>
     <tr>
       
@@ -75,6 +78,7 @@
   {% endfor %}
   </tbody>
 </table>
+{% endif %}
 
 
 {% endblock %}

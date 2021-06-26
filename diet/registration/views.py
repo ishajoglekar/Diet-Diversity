@@ -334,6 +334,8 @@ def bulkRegister(request):
                 student.parent = parent
                 student.user = studentUser
                 student.save()    
+        
+        messages.success(request, 'Registration Completed')
         return redirect('/bulkRegister')
 
 
@@ -373,8 +375,7 @@ def getTemplate(request):
     # construct response
     output.seek(0)
     response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response['Content-Disposition'] = "attachment; filename=template.xlsx"
-
+    response['Content-Disposition'] = "attachment; filename=template.xlsx"    
     return response  
 
 @login_required(login_url='/login')
@@ -766,6 +767,7 @@ def moduleOne2(request,user=None):
             formPre = getFormType('moduleOne')
             return render(request,'registration_form/module_one2.html',{'form':form,'formPre':'formPre'})
 
+
 @login_required(login_url='/login')            
 @user_passes_test(is_student,login_url='/forbidden')
 @isActive('moduleOne','student')
@@ -925,6 +927,12 @@ def manageForms(request):
                     update = FormDetails.objects.filter(form=form,teacher=teacher,pre=True,open=True).first()                    
                     update.open = False
                     update.end_timestamp = datetime.datetime.now()
+                    teacher = TeacherInCharge.objects.get(user=request.user)
+                    total_students = teacher.studentsinfo_set.all()
+                    for student in total_students:
+                        if ModuleOne.objects.filter(student=student,submission_timestamp__gte=update.start_timestamp,submission_timestamp__lte=update.end_timestamp,draft=True,pre=True).exists():
+                            draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=update.start_timestamp,submission_timestamp__lte=update.end_timestamp,draft=True,pre=True).first()
+                            draftForm.delete()
                     update.save()
 
             if module_one_post=='on':
@@ -936,6 +944,12 @@ def manageForms(request):
                     update = FormDetails.objects.filter(form=form,teacher=teacher,pre=False,open=True).first()                    
                     update.open = False
                     update.end_timestamp = datetime.datetime.now()
+                    teacher = TeacherInCharge.objects.get(user=request.user)
+                    total_students = teacher.studentsinfo_set.all()
+                    for student in total_students:
+                        if ModuleOne.objects.filter(student=student,submission_timestamp__gte=update.start_timestamp,submission_timestamp__lte=update.end_timestamp,draft=True,pre=False).exists():
+                            draftForm = ModuleOne.objects.filter(student=student,submission_timestamp__gte=update.start_timestamp,submission_timestamp__lte=update.end_timestamp,draft=True,pre=False).first()
+                            draftForm.delete()
                     update.save()
 
         
