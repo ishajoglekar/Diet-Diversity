@@ -46,10 +46,14 @@
       {% endfor %}
     </tr>
     {% endfor %}
- 
+    
+
+    {% if not_filled_students%}
     <tr class="pt-3">
       <td class="text-center fw-bold" colspan="2">Students who have not filled the Form</td>
     </tr>
+    {% endif %}
+
     
     {% for student in not_filled_students %}
     <tr>
