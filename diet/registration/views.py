@@ -151,7 +151,8 @@ def dashboard(request):
     if request.method == "GET":
         students = ParentsInfo.objects.filter(user= request.user).first().studentsinfo_set.all()
         helper = EncryptionHelper()
-        for student in students:            
+        for student in students:    
+            print(student.name)
             student.name = helper.decrypt(student.name)
         return render(request,'registration_form/dashboard.html',{'students':students})
 
@@ -183,7 +184,8 @@ def addStudentForm(request):
             student.user = studentuser
             student.first_password = ''
             student.password_changed = True
-            student.name = encryptionHelper.encrypt(request.POST['name'])            
+            student.name = encryptionHelper.encrypt(request.POST['name']) 
+            print(student.name)           
             student.parent = ParentsInfo.objects.filter(user= request.user).first()
             student.save()
             return redirect('/parent_dashboard')
