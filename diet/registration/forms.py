@@ -8,6 +8,7 @@ from bootstrap_datepicker_plus import DatePickerInput
 import datetime
 from .models import ParentsInfo, StudentsInfo, ModuleOne,FirstModule
 
+
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
         error_messages={'required': 'You must agree to consent form'},
@@ -17,11 +18,11 @@ class ConsentForm(forms.Form):
 class ParentsInfoForm(ModelForm):
     class Meta:
         model = ParentsInfo
-        fields = ['age','occupation','state','city','edu','pincode','no_of_family_members','type_of_family','religion','children_count','gender','address']
+        fields = ['age','occupation','edu','pincode','no_of_family_members','type_of_family','religion','children_count','gender','address']
         labels = {
             'edu': 'Education',
         }
-
+    
     email = forms.EmailField()
     name = forms.CharField()
     GENDER_CHOICES=[('Male','Male'),
@@ -63,7 +64,6 @@ class StudentsInfoForm(ModelForm):
             'end_date': dt.strftime("%m/%d/%Y"),
         }
 
-    
     dob = forms.DateField(
         widget=DatePickerInput(widgets)
     )

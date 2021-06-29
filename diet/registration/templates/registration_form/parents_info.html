@@ -6,6 +6,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 <link rel="stylesheet" href="{% static 'css/consent.css' %}">
+<script src="{% static 'js/state_city.js' %}"></script>
 <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
@@ -82,11 +83,15 @@
                     <div class="col-md-12">
                         <div class="row">
                             <div class="col-md-6">
-                                {{ form.state|as_crispy_field }}
+                                <label for="sts">State*</label>
+                                <select onchange="print_city('state', this.selectedIndex);" id="sts" name ="state" class="form-control" required></select>
                             </div>
 
                             <div class="col-md-6">
-                                {{ form.city|as_crispy_field }}</div>
+                                <label for="state">City*</label>
+                                <select id ="state" class="form-control" required name="city"></select>
+                                <script language="javascript">print_state("sts");</script>
+                            </div>
                         </div>
                     </div>
                     <br>
@@ -129,6 +134,8 @@
                         <input type="submit" class="btn btn-success " value="Next">
                     </div>
 
+                    
+
                 </form>
                 <div id="form-errors">{{form_errors}}</div>
             </div>
@@ -138,4 +145,15 @@
 <div class="col-md-1"></div>
 </div>
 </div>
+
+<script>
+    states = ['Maharashtra', 'Gujarat']
+    cities = {
+
+    }
+    $('#id_state').click(function(){
+            alert("Hey");
+    });
+  
+</script>
 {% endblock %}
