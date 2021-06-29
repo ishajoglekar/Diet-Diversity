@@ -40,6 +40,6 @@ urlpatterns = [
     path('previous/',views.previous),
     path('manage-forms/',views.manageForms),
     url('already_filled/', TemplateView.as_view(template_name='registration_form/already_filled.html')),
-    url('form_closed/', TemplateView.as_view(template_name='registration_form/form_closed.html')),        
+    url('form_closed/', TemplateView.as_view(template_name='registration_form/form_closed.html')),            
 ]
   

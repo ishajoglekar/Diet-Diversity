@@ -1,8 +1,10 @@
 from os import name
+from datetime import date,timedelta
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from shared.encryption import EncryptionHelper
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -35,6 +37,7 @@ class State(models.Model):
 
 class City(models.Model):
     city = models.CharField(max_length=255)
+    state = models.ForeignKey(State,on_delete=models.CASCADE,default=1)
 
     def __str__(self):
         return self.city
@@ -75,7 +78,7 @@ class ParentsInfo(models.Model):
     consent = models.BooleanField(default=True)
     name = models.BinaryField(max_length=500)
     gender = models.CharField(max_length=255)
-    age = models.IntegerField()
+    age = models.IntegerField(validators=[MinValueValidator(3)])
     occupation = models.ForeignKey(Occupation,on_delete=models.CASCADE)
     state = models.ForeignKey(State,on_delete=models.CASCADE)
     edu = models.ForeignKey(Education,on_delete=models.CASCADE)
@@ -85,7 +88,7 @@ class ParentsInfo(models.Model):
     no_of_family_members = models.IntegerField()
     type_of_family = models.ForeignKey(FamilyType,on_delete=models.CASCADE)
     religion = models.ForeignKey(ReligiousBelief,on_delete=models.CASCADE)
-    children_count = models.IntegerField()
+    children_count = models.IntegerField(validators=[MinValueValidator(1)])
     first_password = models.CharField(max_length=20,default='helloworld14')
     password_changed = models.BooleanField(default=False)
 
@@ -107,9 +110,9 @@ class StudentsInfo(models.Model):
     name = models.BinaryField(max_length=500)
     school = models.ForeignKey(School,on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
-    rollno = models.IntegerField()
+    rollno = models.IntegerField(validators=[MinValueValidator(0)])
     gender = models.CharField(max_length=255)
-    dob = models.DateField()
+    dob = models.DateField(validators=[MaxValueValidator(limit_value=date.today()-timedelta(days=(365*3)))])
     parent = models.ForeignKey(ParentsInfo,on_delete=models.CASCADE)
     first_password = models.CharField(max_length=20,default='helloworld14')
     password_changed = models.BooleanField(default=False)
